@@ -1,0 +1,425 @@
+@import "tailwindcss";
+
+/* ── Landing page color tokens (HSL from siftapp.site :root) ── */
+:root {
+  --background: 240 7% 94%;
+  --foreground: 185 10% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 185 10% 18%;
+  --primary: 214 33% 49%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 237 8% 35%;
+  --muted: 240 7% 94%;
+  --muted-foreground: 237 8% 35%;
+  --accent: 30 24% 54%;
+  --accent-foreground: 0 0% 100%;
+  --border: 240 3% 88%;
+  --input: 240 3% 88%;
+  --ring: 214 33% 49%;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+  border-color: hsl(var(--border));
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Merriweather', Georgia, serif;
+  color: hsl(var(--foreground));
+}
+
+::selection {
+  background-color: hsl(var(--primary) / 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV — matches: fixed top-0 left-0 right-0 z-50 bg-transparent
+   ═══════════════════════════════════════════════════════════════ */
+.sift-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  transition: all 300ms ease;
+  background: transparent;
+}
+.sift-nav--scrolled {
+  background: hsl(var(--background) / 0.95);
+  backdrop-filter: blur(4px);
+}
+/* matches: mx-auto flex max-w-5xl items-center justify-between px-6 py-4 */
+.sift-nav-inner {
+  max-width: 64rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+}
+/* matches: font-serif text-2xl italic text-foreground */
+.sift-logo {
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-style: italic;
+  color: hsl(var(--foreground));
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER — matches: border-t border-border px-6 py-8
+   ═══════════════════════════════════════════════════════════════ */
+.sift-footer {
+  border-top: 1px solid hsl(var(--border));
+  padding: 2rem 1.5rem;
+}
+/* matches: mx-auto flex max-w-5xl flex-col gap-4 */
+.sift-footer-inner {
+  max-width: 64rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.sift-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+/* matches: font-serif text-lg italic text-foreground */
+.sift-footer-logo {
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-style: italic;
+  color: hsl(var(--foreground));
+}
+/* matches: text-xs text-muted-foreground */
+.sift-footer-note {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO TYPOGRAPHY — from landing page
+   ═══════════════════════════════════════════════════════════════ */
+
+/* H1 hero: text-3xl font-bold leading-tight tracking-tight → md:text-[2.75rem] md:leading-[1.2] */
+.sift-hero-heading {
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: 1.875rem;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: hsl(var(--foreground));
+}
+@media (min-width: 768px) {
+  .sift-hero-heading {
+    font-size: 2.75rem;
+    line-height: 1.2;
+  }
+}
+
+/* Hero p1: text-lg leading-relaxed text-foreground/90 → md:text-xl */
+.sift-hero-sub {
+  font-size: 1.125rem;
+  line-height: 1.625;
+  color: hsl(var(--foreground) / 0.9);
+}
+@media (min-width: 768px) {
+  .sift-hero-sub {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+}
+
+/* Hero p2: text-sm leading-relaxed text-secondary → md:text-base */
+.sift-hero-detail {
+  font-size: 0.875rem;
+  line-height: 1.625;
+  color: hsl(var(--secondary));
+}
+@media (min-width: 768px) {
+  .sift-hero-detail {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION HEADINGS — from landing page: font-serif text-2xl font-bold → md:text-3xl
+   ═══════════════════════════════════════════════════════════════ */
+.sift-section-heading {
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+@media (min-width: 768px) {
+  .sift-section-heading {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+/* H3 subsection: font-serif text-lg font-bold */
+.sift-h3 {
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+/* Small / meta text */
+.sift-text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.sift-text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS — from landing page
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Primary: rounded-lg bg-primary px-8 py-3.5 text-base font-medium text-primary-foreground */
+.sift-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.875rem 2rem;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+  text-decoration: none;
+}
+.sift-btn-primary:hover {
+  background-color: hsl(var(--primary) / 0.9);
+}
+
+/* Nav button: smaller — px-5 py-2.5 text-sm */
+.sift-btn-primary-sm {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* Secondary: outlined */
+.sift-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.875rem 2rem;
+  background-color: transparent;
+  color: hsl(var(--primary));
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  border: 1.5px solid hsl(var(--primary));
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+.sift-btn-secondary:hover {
+  background-color: hsl(var(--primary) / 0.08);
+}
+
+/* Ghost: text-sm text-secondary, hover underline */
+.sift-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: hsl(var(--secondary));
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+.sift-btn-ghost:hover {
+  color: hsl(var(--foreground));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CATEGORY TAG PILLS — from style guide
+   ═══════════════════════════════════════════════════════════════ */
+.sift-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+.sift-pill-category {
+  color: hsl(var(--accent));
+  background-color: hsl(var(--accent) / 0.12);
+}
+.sift-pill-free {
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.12);
+}
+.sift-pill-ending {
+  color: hsl(var(--accent));
+  background-color: hsl(var(--accent) / 0.12);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CARDS — matches: rounded-lg border border-border bg-card p-6 shadow-sm
+   ═══════════════════════════════════════════════════════════════ */
+.sift-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  overflow: hidden;
+  transition: box-shadow 150ms ease;
+}
+.sift-card:hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+.sift-card-inner {
+  padding: 1.5rem;
+  border-left: 4px solid hsl(var(--primary));
+}
+.sift-card-inner--ending {
+  border-left-color: hsl(var(--accent));
+}
+
+/* Option cards (quiz) */
+.sift-option {
+  width: 100%;
+  text-align: left;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.sift-option:hover {
+  border-color: hsl(var(--secondary) / 0.4);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+.sift-option--selected {
+  border: 2px solid hsl(var(--primary));
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   META / MATCH / FILTER PILLS
+   ═══════════════════════════════════════════════════════════════ */
+.sift-meta {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--secondary));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.sift-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sift-match {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-style: italic;
+  color: hsl(var(--primary));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sift-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS BAR
+   ═══════════════════════════════════════════════════════════════ */
+.sift-progress {
+  width: 100%;
+  height: 4px;
+  background: hsl(var(--border));
+}
+.sift-progress-fill {
+  height: 4px;
+  background: hsl(var(--primary));
+  transition: width 500ms ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS — matches landing page exactly:
+   .fade-up { opacity:0; transform:translateY(24px); transition: opacity .6s ease-out, transform .6s ease-out }
+   .fade-up.visible { opacity:1; transform:translateY(0) }
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.6s ease-out forwards;
+}
+.animate-fade-up-delay-1 {
+  animation: fadeUp 0.6s ease-out 0.1s forwards;
+  opacity: 0;
+}
+.animate-fade-up-delay-2 {
+  animation: fadeUp 0.6s ease-out 0.2s forwards;
+  opacity: 0;
+}
+.animate-fade-up-delay-3 {
+  animation: fadeUp 0.6s ease-out 0.3s forwards;
+  opacity: 0;
+}
+.animate-fade-up-delay-4 {
+  animation: fadeUp 0.6s ease-out 0.4s forwards;
+  opacity: 0;
+}

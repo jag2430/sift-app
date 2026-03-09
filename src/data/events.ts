@@ -1,0 +1,445 @@
+export type EventCategory =
+  | "arts"
+  | "music"
+  | "comedy"
+  | "food"
+  | "outdoors"
+  | "nightlife";
+
+export type EventVibe = "chill" | "lively" | "adventurous" | "cultural";
+
+export type EventTimeframe = "today" | "this-weekend" | "this-week";
+
+export type EventDistance = "neighborhood" | "borough" | "anywhere";
+
+export type PriceRange = "free" | "under-20" | "under-50" | "any";
+
+export interface SiftEvent {
+  id: string;
+  title: string;
+  category: EventCategory;
+  vibes: EventVibe[];
+  description: string;
+  location: string;
+  neighborhood: string;
+  borough: "Manhattan" | "Brooklyn" | "Queens" | "Bronx" | "Staten Island";
+  date: string;
+  time: string;
+  price: number;
+  priceLabel: string;
+  link: string;
+  matchReason?: string;
+  endingSoon?: boolean;
+  daysLeft?: number;
+  tags: string[];
+}
+
+// ── Hardcoded event data for MVP ────────────────────────────
+// In production this comes from Supabase / scraped sources.
+// Updated by hand on a rolling basis during validation phase.
+
+export const events: SiftEvent[] = [
+  // ── ARTS ──────────────────────────────────────────────────
+  {
+    id: "art-001",
+    title: "Yoshitomo Nara: Through the Break of Day",
+    category: "arts",
+    vibes: ["cultural", "chill"],
+    description:
+      "A rare solo exhibition by the beloved Japanese artist, featuring over 100 works spanning paintings, sculptures, and drawings. Intimate and deeply moving.",
+    location: "MoMA PS1",
+    neighborhood: "Long Island City",
+    borough: "Queens",
+    date: "Through Mar 22",
+    time: "12 PM – 6 PM",
+    price: 10,
+    priceLabel: "$10",
+    link: "https://momaps1.org",
+    endingSoon: true,
+    daysLeft: 14,
+    tags: ["exhibition", "art", "Japanese"],
+  },
+  {
+    id: "art-002",
+    title: "Immersive Van Gogh: Final Weeks",
+    category: "arts",
+    vibes: ["cultural", "adventurous"],
+    description:
+      "Floor-to-ceiling projections of Van Gogh's most iconic works in a stunning 25,000 sq ft space. The kind of thing you see once.",
+    location: "Pier 36",
+    neighborhood: "Lower East Side",
+    borough: "Manhattan",
+    date: "Through Mar 16",
+    time: "10 AM – 9 PM",
+    price: 40,
+    priceLabel: "$40",
+    link: "https://vangoghnyc.com",
+    endingSoon: true,
+    daysLeft: 8,
+    tags: ["immersive", "exhibition", "art"],
+  },
+  {
+    id: "art-003",
+    title: "Open Studios at Pioneer Works",
+    category: "arts",
+    vibes: ["cultural", "chill"],
+    description:
+      "Free access to artist studios, live experiments, and site-specific installations. Grab a drink at the bar and wander. Always something unexpected.",
+    location: "Pioneer Works",
+    neighborhood: "Red Hook",
+    borough: "Brooklyn",
+    date: "Sat, Mar 15",
+    time: "4 PM – 10 PM",
+    price: 0,
+    priceLabel: "Free",
+    link: "https://pioneerworks.org",
+    tags: ["free", "art", "studios"],
+  },
+  {
+    id: "art-004",
+    title: "Brooklyn Ceramic Collective: Drop-In Workshop",
+    category: "arts",
+    vibes: ["chill", "adventurous"],
+    description:
+      "No experience needed. Show up, make something with your hands, leave with a piece you actually made. Wine optional but encouraged.",
+    location: "Brooklyn Ceramic Collective",
+    neighborhood: "Williamsburg",
+    borough: "Brooklyn",
+    date: "Sun, Mar 16",
+    time: "2 PM – 5 PM",
+    price: 45,
+    priceLabel: "$45",
+    link: "https://brooklynceramics.com",
+    tags: ["workshop", "hands-on", "ceramics"],
+  },
+
+  // ── MUSIC ─────────────────────────────────────────────────
+  {
+    id: "mus-001",
+    title: "Jazz at Smalls: Late Night Session",
+    category: "music",
+    vibes: ["chill", "cultural"],
+    description:
+      "No-frills basement jazz the way it's supposed to be. Rotating lineup of some of the best players in the city. BYOB-friendly.",
+    location: "Smalls Jazz Club",
+    neighborhood: "West Village",
+    borough: "Manhattan",
+    date: "Fri, Mar 14",
+    time: "10:30 PM – 1 AM",
+    price: 20,
+    priceLabel: "$20",
+    link: "https://smallslive.com",
+    tags: ["jazz", "live music", "late night"],
+  },
+  {
+    id: "mus-002",
+    title: "Ambient Night at Public Records",
+    category: "music",
+    vibes: ["chill", "cultural"],
+    description:
+      "Custom-built sound system, zero phones policy, just you and the music. The sound quality alone is worth it.",
+    location: "Public Records",
+    neighborhood: "Gowanus",
+    borough: "Brooklyn",
+    date: "Sat, Mar 15",
+    time: "8 PM – 12 AM",
+    price: 15,
+    priceLabel: "$15",
+    link: "https://publicrecords.nyc",
+    tags: ["ambient", "listening", "sound system"],
+  },
+  {
+    id: "mus-003",
+    title: "Sofar Sounds: Secret Location Show",
+    category: "music",
+    vibes: ["adventurous", "lively"],
+    description:
+      "Intimate live music in a secret NYC location — you find out where 24 hours before. Three emerging artists, 60 people max.",
+    location: "Secret Location (Revealed 24hrs before)",
+    neighborhood: "TBD",
+    borough: "Manhattan",
+    date: "Sat, Mar 15",
+    time: "7:30 PM",
+    price: 18,
+    priceLabel: "$18",
+    link: "https://sofarsounds.com/nyc",
+    tags: ["secret", "intimate", "live music"],
+  },
+
+  // ── COMEDY ────────────────────────────────────────────────
+  {
+    id: "com-001",
+    title: "Improv Asylum: Late Show",
+    category: "comedy",
+    vibes: ["lively", "adventurous"],
+    description:
+      "Unscripted, crowd-driven improv that goes off the rails in the best way. The late show gets weird. You want the late show.",
+    location: "Improv Asylum NYC",
+    neighborhood: "Midtown",
+    borough: "Manhattan",
+    date: "Fri, Mar 14",
+    time: "10:30 PM",
+    price: 25,
+    priceLabel: "$25",
+    link: "https://improvasylum.com",
+    tags: ["improv", "comedy", "late night"],
+  },
+  {
+    id: "com-002",
+    title: "Stand-Up at The Stand: New Faces Night",
+    category: "comedy",
+    vibes: ["lively", "cultural"],
+    description:
+      "Up-and-coming comics trying out new material. You might catch someone before they blow up. Drinks are strong, laughs are real.",
+    location: "The Stand",
+    neighborhood: "Gramercy",
+    borough: "Manhattan",
+    date: "Thu, Mar 13",
+    time: "8 PM",
+    price: 15,
+    priceLabel: "$15",
+    link: "https://thestandnyc.com",
+    tags: ["stand-up", "comedy", "new talent"],
+  },
+  {
+    id: "com-003",
+    title: "Comedy Cellar: Best of the Week",
+    category: "comedy",
+    vibes: ["lively", "cultural"],
+    description:
+      "The legendary basement where legends drop in unannounced. You don't know who you're getting. That's the point.",
+    location: "Comedy Cellar",
+    neighborhood: "Greenwich Village",
+    borough: "Manhattan",
+    date: "Sat, Mar 15",
+    time: "9:30 PM",
+    price: 28,
+    priceLabel: "$28",
+    link: "https://comedycellar.com",
+    tags: ["stand-up", "comedy", "iconic"],
+  },
+
+  // ── FOOD ──────────────────────────────────────────────────
+  {
+    id: "food-001",
+    title: "Smorgasburg: Spring Preview Pop-Up",
+    category: "food",
+    vibes: ["lively", "adventurous"],
+    description:
+      "Dozens of local food vendors in one spot, right on the waterfront. The lamb burger from Sheep Station alone is worth the trip.",
+    location: "Williamsburg Waterfront",
+    neighborhood: "Williamsburg",
+    borough: "Brooklyn",
+    date: "Sat, Mar 15",
+    time: "11 AM – 6 PM",
+    price: 0,
+    priceLabel: "Free entry",
+    link: "https://smorgasburg.com",
+    tags: ["food market", "outdoor", "free entry"],
+  },
+  {
+    id: "food-002",
+    title: "Ramen Lab Omakase Tasting",
+    category: "food",
+    vibes: ["cultural", "adventurous"],
+    description:
+      "8-seat counter, rotating guest chefs from Japan. Each one brings a totally different bowl. Reserve ahead — it fills fast.",
+    location: "Ramen Lab",
+    neighborhood: "Nolita",
+    borough: "Manhattan",
+    date: "Sun, Mar 16",
+    time: "6 PM – 9 PM",
+    price: 35,
+    priceLabel: "$35",
+    link: "https://ramenlab.nyc",
+    endingSoon: true,
+    daysLeft: 8,
+    tags: ["ramen", "omakase", "reservations"],
+  },
+  {
+    id: "food-003",
+    title: "Chelsea Market After-Hours Tasting",
+    category: "food",
+    vibes: ["chill", "cultural"],
+    description:
+      "Guided tasting through six Chelsea Market vendors after they close to the public. Wine pairings, stories behind each spot, small groups only.",
+    location: "Chelsea Market",
+    neighborhood: "Chelsea",
+    borough: "Manhattan",
+    date: "Fri, Mar 14",
+    time: "7 PM – 9:30 PM",
+    price: 50,
+    priceLabel: "$50",
+    link: "https://chelseamarket.com",
+    tags: ["tasting", "guided", "food tour"],
+  },
+
+  // ── OUTDOORS ──────────────────────────────────────────────
+  {
+    id: "out-001",
+    title: "Sunrise Yoga on the Brooklyn Bridge Promenade",
+    category: "outdoors",
+    vibes: ["chill", "adventurous"],
+    description:
+      "Mat, skyline, sunrise. 45 minutes of yoga with the Manhattan skyline waking up behind you. Bring your own mat. Dress warm.",
+    location: "Brooklyn Bridge Promenade",
+    neighborhood: "DUMBO",
+    borough: "Brooklyn",
+    date: "Sat, Mar 15",
+    time: "6:30 AM",
+    price: 0,
+    priceLabel: "Free",
+    link: "https://meetup.com/nyc-sunrise-yoga",
+    tags: ["yoga", "free", "sunrise", "outdoor"],
+  },
+  {
+    id: "out-002",
+    title: "Guided Bird Walk in Central Park",
+    category: "outdoors",
+    vibes: ["chill", "cultural"],
+    description:
+      "Led by NYC Audubon. You'll be surprised what's living in the park. Binoculars provided. The Ramble in early March is peak migration energy.",
+    location: "Central Park – The Ramble",
+    neighborhood: "Upper West Side",
+    borough: "Manhattan",
+    date: "Sun, Mar 16",
+    time: "8 AM – 10 AM",
+    price: 0,
+    priceLabel: "Free",
+    link: "https://nycaudubon.org",
+    tags: ["nature", "free", "guided", "birds"],
+  },
+  {
+    id: "out-003",
+    title: "Kayaking on the Gowanus Canal",
+    category: "outdoors",
+    vibes: ["adventurous", "lively"],
+    description:
+      "Yes, the Gowanus. It's actually cleaned up a lot. Free kayaking with the Gowanus Dredgers on a first-come basis. Truly only-in-Brooklyn.",
+    location: "Gowanus Dredgers Boathouse",
+    neighborhood: "Gowanus",
+    borough: "Brooklyn",
+    date: "Sat, Mar 15",
+    time: "1 PM – 4 PM",
+    price: 0,
+    priceLabel: "Free",
+    link: "https://gowanuscanal.org",
+    tags: ["kayaking", "free", "adventure", "outdoor"],
+  },
+
+  // ── NIGHTLIFE ─────────────────────────────────────────────
+  {
+    id: "nit-001",
+    title: "House of Yes: Cosmic Disco",
+    category: "nightlife",
+    vibes: ["lively", "adventurous"],
+    description:
+      "Dress code: celestial. Think glitter, bodysuits, and zero judgment. Performers, dancing, visuals — the full experience.",
+    location: "House of Yes",
+    neighborhood: "Bushwick",
+    borough: "Brooklyn",
+    date: "Sat, Mar 15",
+    time: "10 PM – 4 AM",
+    price: 25,
+    priceLabel: "$25",
+    link: "https://houseofyes.org",
+    tags: ["dance", "themed", "performance"],
+  },
+  {
+    id: "nit-002",
+    title: "Speakeasy Night at Bathtub Gin",
+    category: "nightlife",
+    vibes: ["chill", "cultural"],
+    description:
+      "Enter through a coffee shop. Inside: jazz trio, craft cocktails, dim lighting. Feels like a secret even though everyone knows about it.",
+    location: "Bathtub Gin",
+    neighborhood: "Chelsea",
+    borough: "Manhattan",
+    date: "Fri, Mar 14",
+    time: "6 PM – 2 AM",
+    price: 0,
+    priceLabel: "No cover",
+    link: "https://bathtubginnyc.com",
+    tags: ["speakeasy", "cocktails", "jazz"],
+  },
+  {
+    id: "nit-003",
+    title: "Rooftop DJ Set at Westlight",
+    category: "nightlife",
+    vibes: ["lively", "chill"],
+    description:
+      "28th floor views, local DJ, solid cocktails. On a clear night there's nowhere better to be in Brooklyn.",
+    location: "Westlight at William Vale",
+    neighborhood: "Williamsburg",
+    borough: "Brooklyn",
+    date: "Sat, Mar 15",
+    time: "9 PM – 2 AM",
+    price: 0,
+    priceLabel: "No cover",
+    link: "https://westlightnyc.com",
+    tags: ["rooftop", "DJ", "views", "cocktails"],
+  },
+];
+
+// ── Filtering logic ─────────────────────────────────────────
+export function filterEvents(filters: {
+  category?: EventCategory;
+  timeframe?: EventTimeframe;
+  distance?: EventDistance;
+  price?: PriceRange;
+  vibe?: EventVibe;
+}): SiftEvent[] {
+  let filtered = [...events];
+
+  if (filters.category) {
+    filtered = filtered.filter((e) => e.category === filters.category);
+  }
+
+  if (filters.price) {
+    switch (filters.price) {
+      case "free":
+        filtered = filtered.filter((e) => e.price === 0);
+        break;
+      case "under-20":
+        filtered = filtered.filter((e) => e.price <= 20);
+        break;
+      case "under-50":
+        filtered = filtered.filter((e) => e.price <= 50);
+        break;
+      // "any" — no filter
+    }
+  }
+
+  if (filters.vibe) {
+    filtered = filtered.filter((e) => e.vibes.includes(filters.vibe!));
+  }
+
+  if (filters.distance) {
+    if (filters.distance === "neighborhood") {
+      // For MVP, just return Manhattan results as "nearby" default
+      filtered = filtered.filter((e) => e.borough === "Manhattan");
+    } else if (filters.distance === "borough") {
+      filtered = filtered.filter(
+        (e) => e.borough === "Manhattan" || e.borough === "Brooklyn"
+      );
+    }
+    // "anywhere" — no filter
+  }
+
+  // Add match reasons
+  filtered = filtered.map((e) => {
+    const reasons: string[] = [];
+    if (filters.category) reasons.push(`Matches your mood: ${filters.category}`);
+    if (filters.vibe) reasons.push(`${filters.vibe} vibe`);
+    if (e.price === 0) reasons.push("It's free");
+    if (e.endingSoon) reasons.push(`Only ${e.daysLeft} days left`);
+    return {
+      ...e,
+      matchReason: reasons.length > 0 ? reasons.join(" · ") : "Picked for you",
+    };
+  });
+
+  // Shuffle and limit to 5
+  filtered = filtered.sort(() => Math.random() - 0.5);
+  return filtered.slice(0, 5);
+}
