@@ -1,38 +1,11 @@
-export type EventCategory =
-  | "arts"
-  | "music"
-  | "comedy"
-  | "food"
-  | "outdoors"
-  | "nightlife";
-
-export type EventVibe = "chill" | "lively" | "adventurous" | "cultural";
-
-export type EventTimeframe = "today" | "this-weekend" | "this-week";
-
-export type EventDistance = "neighborhood" | "borough" | "anywhere";
-
-export type PriceRange = "free" | "under-20" | "under-50" | "any";
-
-export interface SiftEvent {
-  id: string;
-  title: string;
-  category: EventCategory;
-  vibes: EventVibe[];
-  description: string;
-  location: string;
-  neighborhood: string;
-  borough: "Manhattan" | "Brooklyn" | "Queens" | "Bronx" | "Staten Island";
-  date: string;
-  time: string;
-  price: number;
-  priceLabel: string;
-  link: string;
-  matchReason?: string;
-  endingSoon?: boolean;
-  daysLeft?: number;
-  tags: string[];
-}
+import type {
+  EventCategory,
+  EventDistance,
+  EventVibe,
+  PriceRange,
+  SiftEvent,
+} from "@/types/event";
+import type { Filters } from "@/types/quiz";
 
 // ── Hardcoded event data for MVP ────────────────────────────
 // In production this comes from Supabase / scraped sources.
@@ -380,66 +353,3 @@ export const events: SiftEvent[] = [
     tags: ["rooftop", "DJ", "views", "cocktails"],
   },
 ];
-
-// ── Filtering logic ─────────────────────────────────────────
-export function filterEvents(filters: {
-  category?: EventCategory;
-  timeframe?: EventTimeframe;
-  distance?: EventDistance;
-  price?: PriceRange;
-  vibe?: EventVibe;
-}): SiftEvent[] {
-  let filtered = [...events];
-
-  if (filters.category) {
-    filtered = filtered.filter((e) => e.category === filters.category);
-  }
-
-  if (filters.price) {
-    switch (filters.price) {
-      case "free":
-        filtered = filtered.filter((e) => e.price === 0);
-        break;
-      case "under-20":
-        filtered = filtered.filter((e) => e.price <= 20);
-        break;
-      case "under-50":
-        filtered = filtered.filter((e) => e.price <= 50);
-        break;
-      // "any" — no filter
-    }
-  }
-
-  if (filters.vibe) {
-    filtered = filtered.filter((e) => e.vibes.includes(filters.vibe!));
-  }
-
-  if (filters.distance) {
-    if (filters.distance === "neighborhood") {
-      // For MVP, just return Manhattan results as "nearby" default
-      filtered = filtered.filter((e) => e.borough === "Manhattan");
-    } else if (filters.distance === "borough") {
-      filtered = filtered.filter(
-        (e) => e.borough === "Manhattan" || e.borough === "Brooklyn"
-      );
-    }
-    // "anywhere" — no filter
-  }
-
-  // Add match reasons
-  filtered = filtered.map((e) => {
-    const reasons: string[] = [];
-    if (filters.category) reasons.push(`Matches your mood: ${filters.category}`);
-    if (filters.vibe) reasons.push(`${filters.vibe} vibe`);
-    if (e.price === 0) reasons.push("It's free");
-    if (e.endingSoon) reasons.push(`Only ${e.daysLeft} days left`);
-    return {
-      ...e,
-      matchReason: reasons.length > 0 ? reasons.join(" · ") : "Picked for you",
-    };
-  });
-
-  // Shuffle and limit to 5
-  filtered = filtered.sort(() => Math.random() - 0.5);
-  return filtered.slice(0, 5);
-}

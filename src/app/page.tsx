@@ -1,33 +1,24 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import {
-  MapPin,
-  Clock,
-  DollarSign,
-  ArrowLeft,
-  ExternalLink,
-  Sparkles,
-  RotateCcw,
-} from "lucide-react";
-import {
-  filterEvents,
-  type SiftEvent,
-  type EventCategory,
-  type EventVibe,
-  type PriceRange,
-  type EventDistance,
-} from "@/data/events";
+import { useCallback, useState } from "react";
+import { ArrowLeft, RotateCcw, Sparkles } from "lucide-react";
 
-// ── Types ───────────────────────────────────────────────────
-type Step = "welcome" | "category" | "vibe" | "price" | "distance" | "results";
+import Nav from "@/components/layout/Nav";
+import Footer from "@/components/layout/Footer";
+import ProgressBar from "@/components/layout/ProgressBar";
+import OptionCard from "@/components/quiz/OptionCard";
+import EventCard from "@/components/events/EventCard";
+import EventDetail from "@/components/events/EventDetail";
 
-interface Filters {
-  category?: EventCategory;
-  vibe?: EventVibe;
-  price?: PriceRange;
-  distance?: EventDistance;
-}
+import { getRecommendedEvents } from "@/lib/eventRecommendations";
+import type {
+  EventCategory,
+  EventDistance,
+  EventVibe,
+  PriceRange,
+  SiftEvent,
+} from "@/types/event";
+import type { Filters, Step } from "@/types/quiz";
 
 // ── Options ─────────────────────────────────────────────────
 const categories: { value: EventCategory; label: string; emoji: string }[] = [
@@ -59,135 +50,6 @@ const distances: { value: EventDistance; label: string; desc: string }[] = [
   { value: "anywhere", label: "Anywhere in NYC", desc: "All boroughs" },
 ];
 
-// ── Nav — matches landing page exactly ──────────────────────
-function Nav({ onReset, showButton = false }: { onReset: () => void; showButton?: boolean }) {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
-
-  return (
-    <nav className={`sift-nav ${scrolled ? "sift-nav--scrolled" : ""}`}>
-      <div className="sift-nav-inner">
-        <button onClick={onReset} className="sift-logo">Sift</button>
-        {showButton && (
-          <button onClick={onReset} className="sift-btn-primary sift-btn-primary-sm">
-            Start Over
-          </button>
-        )}
-      </div>
-    </nav>
-  );
-}
-
-// ── Footer — matches landing page exactly ───────────────────
-function Footer() {
-  return (
-    <footer className="sift-footer">
-      <div className="sift-footer-inner">
-        <div className="sift-footer-row">
-          <span className="sift-footer-logo">Sift</span>
-          <span className="sift-footer-note">Made in NYC</span>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-// ── Progress Bar ────────────────────────────────────────────
-function ProgressBar({ step }: { step: Step }) {
-  const steps: Step[] = ["category", "vibe", "price", "distance"];
-  const idx = steps.indexOf(step);
-  if (idx === -1) return null;
-  return (
-    <div className="sift-progress" style={{ position: "fixed", top: 65, left: 0, right: 0, zIndex: 49 }}>
-      <div className="sift-progress-fill" style={{ width: `${((idx + 1) / steps.length) * 100}%` }} />
-    </div>
-  );
-}
-
-// ── Option Card ─────────────────────────────────────────────
-function OptionCard({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button onClick={onClick} className={`sift-option ${selected ? "sift-option--selected" : ""}`}>
-      {children}
-    </button>
-  );
-}
-
-// ── Event Card ──────────────────────────────────────────────
-function EventCard({ event, index, onClick }: { event: SiftEvent; index: number; onClick: () => void }) {
-  const delay = ["animate-fade-up", "animate-fade-up-delay-1", "animate-fade-up-delay-2", "animate-fade-up-delay-3", "animate-fade-up-delay-4"][index] || "animate-fade-up-delay-4";
-  return (
-    <button onClick={onClick} className={`sift-card ${delay}`} style={{ width: "100%", textAlign: "left", cursor: "pointer" }}>
-      <div className={`sift-card-inner ${event.endingSoon ? "sift-card-inner--ending" : ""}`}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-          <span className="sift-pill sift-pill-category">{event.category}</span>
-          {event.endingSoon && <span className="sift-pill sift-pill-ending">Ends in {event.daysLeft} days</span>}
-          {event.price === 0 && <span className="sift-pill sift-pill-free">Free</span>}
-        </div>
-        <h3 className="sift-h3" style={{ marginBottom: 8 }}>{event.title}</h3>
-        <div className="sift-meta" style={{ marginBottom: 12 }}>
-          <span className="sift-meta-item"><MapPin size={14} strokeWidth={1.5} />{event.location}</span>
-          <span className="sift-meta-item"><Clock size={14} strokeWidth={1.5} />{event.date}</span>
-          <span className="sift-meta-item"><DollarSign size={14} strokeWidth={1.5} />{event.priceLabel}</span>
-        </div>
-        {event.matchReason && (
-          <p className="sift-match"><Sparkles size={14} strokeWidth={1.5} />Matched because: {event.matchReason}</p>
-        )}
-      </div>
-    </button>
-  );
-}
-
-// ── Event Detail ────────────────────────────────────────────
-function EventDetail({ event, onBack }: { event: SiftEvent; onBack: () => void }) {
-  return (
-    <div className="animate-fade-up">
-      <button onClick={onBack} className="sift-btn-ghost" style={{ marginBottom: 24 }}>
-        <ArrowLeft size={16} strokeWidth={1.5} />Back to results
-      </button>
-      <div className="sift-card">
-        <div className={`sift-card-inner ${event.endingSoon ? "sift-card-inner--ending" : ""}`}>
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 16 }}>
-            <span className="sift-pill sift-pill-category">{event.category}</span>
-            {event.endingSoon && <span className="sift-pill sift-pill-ending">Ends in {event.daysLeft} days</span>}
-            {event.price === 0 && <span className="sift-pill sift-pill-free">Free</span>}
-          </div>
-          <h2 className="sift-hero-heading" style={{ marginBottom: 16, fontSize: "1.5rem", lineHeight: "2rem" }}>{event.title}</h2>
-          <p className="sift-text-sm" style={{ color: "hsl(185 10% 18%)", lineHeight: 1.625, marginBottom: 24 }}>{event.description}</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-              <MapPin size={18} strokeWidth={1.5} style={{ color: "hsl(214 33% 49%)", marginTop: 2, flexShrink: 0 }} />
-              <div>
-                <p className="sift-text-sm" style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{event.location}</p>
-                <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)" }}>{event.neighborhood}, {event.borough}</p>
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-              <Clock size={18} strokeWidth={1.5} style={{ color: "hsl(214 33% 49%)", marginTop: 2, flexShrink: 0 }} />
-              <div>
-                <p className="sift-text-sm" style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{event.date}</p>
-                <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)" }}>{event.time}</p>
-              </div>
-            </div>
-          </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 32 }}>
-            {event.tags.map((tag) => (
-              <span key={tag} style={{ fontSize: "0.75rem", padding: "4px 8px", borderRadius: 4, backgroundColor: "hsl(240 7% 94%)", color: "hsl(237 8% 35%)" }}>{tag}</span>
-            ))}
-          </div>
-          <a href={event.link} target="_blank" rel="noopener noreferrer" className="sift-btn-primary">
-            Check it out<ExternalLink size={16} strokeWidth={1.5} />
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ═══════════════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════════════
@@ -199,7 +61,7 @@ export default function Home() {
   const [selectedEvent, setSelectedEvent] = useState<SiftEvent | null>(null);
 
   const reset = useCallback(() => { setStep("welcome"); setFilters({}); setResults([]); setSelectedEvent(null); }, []);
-  const goToResults = useCallback((f: Filters) => { setResults(filterEvents(f)); setStep("results"); }, []);
+  const goToResults = useCallback((f: Filters) => { setResults(getRecommendedEvents(f)); setStep("results"); }, []);
   const handleBack = useCallback(() => {
     const flow: Step[] = ["welcome", "category", "vibe", "price", "distance", "results"];
     const idx = flow.indexOf(step);
@@ -370,7 +232,7 @@ export default function Home() {
               <button onClick={reset} className="sift-btn-primary">
                 <RotateCcw size={16} strokeWidth={1.5} />Start over
               </button>
-              <button onClick={() => setResults(filterEvents(filters))} className="sift-btn-secondary">
+              <button onClick={() => setResults(getRecommendedEvents(filters))} className="sift-btn-secondary">
                 <Sparkles size={16} strokeWidth={1.5} />Surprise me again
               </button>
             </div>
