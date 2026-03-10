@@ -5,7 +5,7 @@ interface ProgressBarProps {
 }
 
 export default function ProgressBar({ step }: ProgressBarProps) {
-  const steps: Step[] = ["category", "vibe", "price", "distance"];
+  const steps: Step[] = ["category", "date", "distance", "price"];
   const idx = steps.indexOf(step);
 
   if (idx === -1) return null;

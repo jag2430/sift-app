@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { ArrowLeft, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
@@ -9,16 +9,17 @@ import ProgressBar from "@/components/layout/ProgressBar";
 import OptionCard from "@/components/quiz/OptionCard";
 import EventCard from "@/components/events/EventCard";
 import EventDetail from "@/components/events/EventDetail";
+import DateRangePicker from "@/components/quiz/DateRangePicker";
 
 import { getRecommendedEvents } from "@/lib/eventRecommendations";
 import type {
   EventCategory,
   EventDistance,
-  EventVibe,
   PriceRange,
   SiftEvent,
 } from "@/types/event";
 import type { Filters, Step } from "@/types/quiz";
+import type { DateRange } from "react-day-picker";
 
 // ── Options ─────────────────────────────────────────────────
 const categories: { value: EventCategory; label: string; emoji: string }[] = [
@@ -28,13 +29,6 @@ const categories: { value: EventCategory; label: string; emoji: string }[] = [
   { value: "food", label: "Food & Drink", emoji: "🍷" },
   { value: "outdoors", label: "Outdoors", emoji: "🌿" },
   { value: "nightlife", label: "Nightlife", emoji: "🌙" },
-];
-
-const vibes: { value: EventVibe; label: string; desc: string }[] = [
-  { value: "chill", label: "Chill", desc: "Low-key and relaxed" },
-  { value: "lively", label: "Lively", desc: "High energy, social" },
-  { value: "adventurous", label: "Adventurous", desc: "Try something new" },
-  { value: "cultural", label: "Cultural", desc: "Learn or explore" },
 ];
 
 const prices: { value: PriceRange; label: string }[] = [
@@ -53,20 +47,66 @@ const distances: { value: EventDistance; label: string; desc: string }[] = [
 // ═══════════════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════════════
+function formatLocalDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatDatePill(dateString: string) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function formatSelectedDateRange(dateFrom?: string, dateTo?: string) {
+  if (!dateFrom || !dateTo) return "";
+
+  if (dateFrom === dateTo) {
+    return formatDatePill(dateFrom);
+  }
+
+  return `${formatDatePill(dateFrom)} – ${formatDatePill(dateTo)}`;
+}
 
 export default function Home() {
   const [step, setStep] = useState<Step>("welcome");
   const [filters, setFilters] = useState<Filters>({});
   const [results, setResults] = useState<SiftEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<SiftEvent | null>(null);
+  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>();
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
 
-  const reset = useCallback(() => { setStep("welcome"); setFilters({}); setResults([]); setSelectedEvent(null); }, []);
-  const goToResults = useCallback((f: Filters) => { setResults(getRecommendedEvents(f)); setStep("results"); }, []);
+  const reset = useCallback(() => {
+    setStep("welcome");
+    setFilters({});
+    setResults([]);
+    setSelectedEvent(null);
+    setSelectedRange(undefined);
+    setDismissedIds([]);
+  }, []);
+  const goToResults = useCallback((f: Filters, excludedIds: string[] = []) => {
+    setResults(getRecommendedEvents(f, excludedIds));
+    setStep("results");
+  }, []);
   const handleBack = useCallback(() => {
-    const flow: Step[] = ["welcome", "category", "vibe", "price", "distance", "results"];
+    const flow: Step[] = ["welcome", "category", "date", "distance", "price", "results"];
     const idx = flow.indexOf(step);
     if (idx > 0) setStep(flow[idx - 1]);
   }, [step]);
+  const handleDismissEvent = useCallback(
+    (eventId: string) => {
+      const nextDismissed = [...dismissedIds, eventId];
+      setDismissedIds(nextDismissed);
+      setResults(getRecommendedEvents(filters, nextDismissed));
+    },
+    [dismissedIds, filters]
+  );
 
   // ── WELCOME — matches landing page hero: min-h-screen, centered, pt-32 pb-24, max-w-[720px] ──
   if (step === "welcome") {
@@ -103,7 +143,7 @@ export default function Home() {
   }
 
   // ── QUIZ STEPS — px-6 py-24, max-w-[720px] centered ──────
-  if (step === "category" || step === "vibe" || step === "price" || step === "distance") {
+  if (step === "category" || step === "date" || step === "price" || step === "distance") {
     return (
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <Nav onReset={reset} showButton />
@@ -121,7 +161,7 @@ export default function Home() {
                 <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginBottom: 32, lineHeight: 1.625 }}>Pick one to start.</p>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   {categories.map((c) => (
-                    <OptionCard key={c.value} selected={filters.category === c.value} onClick={() => { setFilters((f) => ({ ...f, category: c.value })); setTimeout(() => setStep("vibe"), 200); }}>
+                    <OptionCard key={c.value} selected={filters.category === c.value} onClick={() => { setFilters((f) => ({ ...f, category: c.value })); setTimeout(() => setStep("date"), 200); }}>
                       <span style={{ fontSize: "1.5rem", display: "block", marginBottom: 4 }}>{c.emoji}</span>
                       <span style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{c.label}</span>
                     </OptionCard>
@@ -130,17 +170,45 @@ export default function Home() {
               </div>
             )}
 
-            {step === "vibe" && (
+            {step === "date" && (
               <div className="animate-fade-up">
-                <h2 className="sift-section-heading" style={{ marginBottom: 8 }}>What kind of vibe?</h2>
-                <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginBottom: 32, lineHeight: 1.625 }}>This helps us narrow it down.</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {vibes.map((v) => (
-                    <OptionCard key={v.value} selected={filters.vibe === v.value} onClick={() => { setFilters((f) => ({ ...f, vibe: v.value })); setTimeout(() => setStep("price"), 200); }}>
-                      <span style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{v.label}</span>
-                      <span className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginLeft: 8 }}> — {v.desc}</span>
-                    </OptionCard>
-                  ))}
+                <h2 className="sift-section-heading" style={{ marginBottom: 8 }}>
+                  When are you free?
+                </h2>
+                <p
+                  className="sift-text-sm"
+                  style={{ color: "hsl(237 8% 35%)", marginBottom: 24, lineHeight: 1.625 }}
+                >
+                  Pick a date range and we’ll narrow things down.
+                </p>
+
+                <DateRangePicker
+                  value={selectedRange}
+                  onChange={(range) => {
+                    setSelectedRange(range);
+
+                    setFilters((f) => ({
+                      ...f,
+                      dateFrom: range?.from ? formatLocalDate(range.from) : undefined,
+                      dateTo: range?.to ? formatLocalDate(range.to) : undefined,
+                    }));
+                  }}
+                />
+
+                <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+                  <button
+                    className="sift-btn-primary"
+                    disabled={!selectedRange?.from || !selectedRange?.to}
+                    onClick={() => setStep("distance")}
+                    style={{
+                      minWidth: 160,
+                      justifyContent: "center",
+                      opacity: !selectedRange?.from || !selectedRange?.to ? 0.5 : 1,
+                      cursor: !selectedRange?.from || !selectedRange?.to ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    Continue
+                  </button>
                 </div>
               </div>
             )}
@@ -151,7 +219,15 @@ export default function Home() {
                 <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginBottom: 32, lineHeight: 1.625 }}>Per person, roughly.</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {prices.map((p) => (
-                    <OptionCard key={p.value} selected={filters.price === p.value} onClick={() => { setFilters((f) => ({ ...f, price: p.value })); setTimeout(() => setStep("distance"), 200); }}>
+                    <OptionCard
+                      key={p.value}
+                      selected={filters.price === p.value}
+                      onClick={() => {
+                        const f = { ...filters, price: p.value };
+                        setFilters(f);
+                        setTimeout(() => goToResults(f), 200);
+                      }}
+                    >
                       <span style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{p.label}</span>
                     </OptionCard>
                   ))}
@@ -165,7 +241,14 @@ export default function Home() {
                 <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginBottom: 32, lineHeight: 1.625 }}>We&rsquo;ll keep it relevant.</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {distances.map((d) => (
-                    <OptionCard key={d.value} selected={filters.distance === d.value} onClick={() => { const f = { ...filters, distance: d.value }; setFilters(f); setTimeout(() => goToResults(f), 200); }}>
+                    <OptionCard
+                      key={d.value}
+                      selected={filters.distance === d.value}
+                      onClick={() => {
+                        setFilters((f) => ({ ...f, distance: d.value }));
+                        setTimeout(() => setStep("price"), 200);
+                      }}
+                    >
                       <span style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{d.label}</span>
                       <span className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginLeft: 8 }}> — {d.desc}</span>
                     </OptionCard>
@@ -209,17 +292,39 @@ export default function Home() {
                 {results.length > 0 ? `${results.length} things worth your time this weekend.` : "Try broadening your filters \u2014 or just explore everything."}
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
-                {filters.category && <span className="sift-filter-pill">{categories.find((c) => c.value === filters.category)?.label}</span>}
-                {filters.vibe && <span className="sift-filter-pill">{vibes.find((v) => v.value === filters.vibe)?.label}</span>}
-                {filters.price && <span className="sift-filter-pill">{prices.find((p) => p.value === filters.price)?.label}</span>}
-                {filters.distance && <span className="sift-filter-pill">{distances.find((d) => d.value === filters.distance)?.label}</span>}
+                {filters.category && (
+                  <span className="sift-filter-pill">
+                    {categories.find((c) => c.value === filters.category)?.label}
+                  </span>
+                )}
+                {filters.dateFrom && filters.dateTo && (
+                  <span className="sift-filter-pill">
+                    {formatSelectedDateRange(filters.dateFrom, filters.dateTo)}
+                  </span>
+                )}
+                {filters.distance && (
+                  <span className="sift-filter-pill">
+                    {distances.find((d) => d.value === filters.distance)?.label}
+                  </span>
+                )}
+                {filters.price && (
+                  <span className="sift-filter-pill">
+                    {prices.find((p) => p.value === filters.price)?.label}
+                  </span>
+                )}
               </div>
             </div>
 
             {results.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 {results.map((event, i) => (
-                  <EventCard key={event.id} event={event} index={i} onClick={() => setSelectedEvent(event)} />
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    index={i}
+                    onClick={() => setSelectedEvent(event)}
+                    onDismiss={() => handleDismissEvent(event.id)}
+                  />
                 ))}
               </div>
             ) : (
@@ -227,15 +332,6 @@ export default function Home() {
                 <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)" }}>No events matched all your filters.</p>
               </div>
             )}
-
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 40, justifyContent: "center" }}>
-              <button onClick={reset} className="sift-btn-primary">
-                <RotateCcw size={16} strokeWidth={1.5} />Start over
-              </button>
-              <button onClick={() => setResults(getRecommendedEvents(filters))} className="sift-btn-secondary">
-                <Sparkles size={16} strokeWidth={1.5} />Surprise me again
-              </button>
-            </div>
           </div>
         </main>
         <Footer />

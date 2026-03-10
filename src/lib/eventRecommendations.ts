@@ -2,12 +2,40 @@ import { events } from "@/data/events";
 import type { SiftEvent } from "@/types/event";
 import type { Filters } from "@/types/quiz";
 
-export function getRecommendedEvents(filters: Filters): SiftEvent[] {
+function rangesOverlap(
+  filterStart: string,
+  filterEnd: string,
+  eventStart: string,
+  eventEnd?: string
+) {
+  const userStart = new Date(filterStart);
+  const userEnd = new Date(filterEnd);
+  const itemStart = new Date(eventStart);
+  const itemEnd = new Date(eventEnd ?? eventStart);
+
+  return itemStart <= userEnd && itemEnd >= userStart;
+}
+
+export function getRecommendedEvents(
+  filters: Filters,
+  excludedIds: string[] = []
+): SiftEvent[] {
   let filtered = [...events];
+
+  if (excludedIds.length > 0) {
+    filtered = filtered.filter((e) => !excludedIds.includes(e.id));
+  }
 
   if (filters.category) {
     filtered = filtered.filter((e) => e.category === filters.category);
   }
+
+  if (filters.dateFrom && filters.dateTo) {
+    const { dateFrom, dateTo } = filters;
+    filtered = filtered.filter((e) =>
+        rangesOverlap(dateFrom, dateTo, e.startDate, e.endDate)
+    );
+}
 
   if (filters.price) {
     switch (filters.price) {
@@ -23,11 +51,6 @@ export function getRecommendedEvents(filters: Filters): SiftEvent[] {
     }
   }
 
-  if (filters.vibe) {
-    const vibe = filters.vibe;
-    filtered = filtered.filter((e) => e.vibes.includes(vibe));
-    }
-
   if (filters.distance) {
     if (filters.distance === "neighborhood") {
       filtered = filtered.filter((e) => e.borough === "Manhattan");
@@ -41,9 +64,12 @@ export function getRecommendedEvents(filters: Filters): SiftEvent[] {
   filtered = filtered.map((e) => {
     const reasons: string[] = [];
     if (filters.category) reasons.push(`Matches your mood: ${filters.category}`);
-    if (filters.vibe) reasons.push(`${filters.vibe} vibe`);
+    if (filters.dateFrom && filters.dateTo) {
+      reasons.push("Available in your selected dates");
+    }
     if (e.price === 0) reasons.push("It's free");
     if (e.endingSoon) reasons.push(`Only ${e.daysLeft} days left`);
+
     return {
       ...e,
       matchReason: reasons.length > 0 ? reasons.join(" · ") : "Picked for you",

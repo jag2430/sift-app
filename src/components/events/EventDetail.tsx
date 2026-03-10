@@ -6,6 +6,13 @@ interface EventDetailProps {
   onBack: () => void;
 }
 
+function formatEventDate(event: SiftEvent) {
+  if (event.endDate && event.endDate !== event.startDate) {
+    return `${event.startDate} → ${event.endDate}`;
+  }
+  return event.startDate;
+}
+
 export default function EventDetail({ event, onBack }: EventDetailProps) {
   return (
     <div className="animate-fade-up">
@@ -84,7 +91,7 @@ export default function EventDetail({ event, onBack }: EventDetailProps) {
               />
               <div>
                 <p className="sift-text-sm" style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>
-                  {event.date}
+                  {formatEventDate(event)}
                 </p>
                 <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)" }}>
                   {event.time}

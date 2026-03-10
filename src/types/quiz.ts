@@ -1,21 +1,21 @@
 import type {
   EventCategory,
   EventDistance,
-  EventVibe,
   PriceRange,
 } from "@/types/event";
 
 export type Step =
   | "welcome"
   | "category"
-  | "vibe"
-  | "price"
+  | "date"
   | "distance"
+  | "price"
   | "results";
 
 export interface Filters {
   category?: EventCategory;
-  vibe?: EventVibe;
+  dateFrom?: string;
+  dateTo?: string;
   price?: PriceRange;
   distance?: EventDistance;
 }
