@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, DollarSign, MapPin, Sparkles, X } from "lucide-react";
+import { CalendarDays, DollarSign, MapPin, Sparkles, X } from "lucide-react";
 import type { SiftEvent } from "@/types/event";
 
 interface EventCardProps {
@@ -13,7 +13,7 @@ interface EventCardProps {
 
 function formatEventDate(event: SiftEvent) {
   if (event.endDate && event.endDate !== event.startDate) {
-    return `${event.startDate} → ${event.endDate}`;
+    return `${event.startDate} ~ ${event.endDate}`;
   }
   return event.startDate;
 }
@@ -176,7 +176,7 @@ export default function EventCard({
                   {event.location}
                 </span>
                 <span className="sift-meta-item">
-                  <Clock size={14} strokeWidth={1.5} />
+                  <CalendarDays size={14} strokeWidth={1.5} />
                   {formatEventDate(event)}
                 </span>
                 <span className="sift-meta-item">

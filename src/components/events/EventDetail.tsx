@@ -1,4 +1,4 @@
-import { ArrowLeft, Clock, ExternalLink, MapPin } from "lucide-react";
+import { ArrowLeft, CalendarDays, ExternalLink, MapPin } from "lucide-react";
 import type { SiftEvent } from "@/types/event";
 
 interface EventDetailProps {
@@ -8,7 +8,7 @@ interface EventDetailProps {
 
 function formatEventDate(event: SiftEvent) {
   if (event.endDate && event.endDate !== event.startDate) {
-    return `${event.startDate} → ${event.endDate}`;
+    return `${event.startDate} ~ ${event.endDate}`;
   }
   return event.startDate;
 }
@@ -78,13 +78,13 @@ export default function EventDetail({ event, onBack }: EventDetailProps) {
                   {event.location}
                 </p>
                 <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)" }}>
-                  {event.neighborhood}, {event.borough}
+                  {event.address}, {event.borough}
                 </p>
               </div>
             </div>
 
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-              <Clock
+              <CalendarDays
                 size={18}
                 strokeWidth={1.5}
                 style={{ color: "hsl(214 33% 49%)", marginTop: 2, flexShrink: 0 }}
@@ -93,7 +93,7 @@ export default function EventDetail({ event, onBack }: EventDetailProps) {
                 <p className="sift-text-sm" style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>
                   {formatEventDate(event)}
                 </p>
-                <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)" }}>
+                <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", whiteSpace: "pre-line" }}>
                   {event.time}
                 </p>
               </div>
