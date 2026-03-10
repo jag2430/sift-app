@@ -16,7 +16,22 @@ function rangesOverlap(
   return itemStart <= userEnd && itemEnd >= userStart;
 }
 
-export function getRecommendedEvents(
+function applyMatchReason(event: SiftEvent, filters: Filters): SiftEvent {
+  const reasons: string[] = [];
+  if (filters.category) reasons.push(`Matches your mood: ${filters.category}`);
+  if (filters.dateFrom && filters.dateTo) {
+    reasons.push("Available in your selected dates");
+  }
+  if (event.price === 0) reasons.push("It's free");
+  if (event.endingSoon) reasons.push(`Only ${event.daysLeft} days left`);
+
+  return {
+    ...event,
+    matchReason: reasons.length > 0 ? reasons.join(" · ") : "Picked for you",
+  };
+}
+
+export function getEventCandidates(
   filters: Filters,
   excludedIds: string[] = []
 ): SiftEvent[] {
@@ -33,9 +48,9 @@ export function getRecommendedEvents(
   if (filters.dateFrom && filters.dateTo) {
     const { dateFrom, dateTo } = filters;
     filtered = filtered.filter((e) =>
-        rangesOverlap(dateFrom, dateTo, e.startDate, e.endDate)
+      rangesOverlap(dateFrom, dateTo, e.startDate, e.endDate)
     );
-}
+  }
 
   if (filters.price) {
     switch (filters.price) {
@@ -61,21 +76,14 @@ export function getRecommendedEvents(
     }
   }
 
-  filtered = filtered.map((e) => {
-    const reasons: string[] = [];
-    if (filters.category) reasons.push(`Matches your mood: ${filters.category}`);
-    if (filters.dateFrom && filters.dateTo) {
-      reasons.push("Available in your selected dates");
-    }
-    if (e.price === 0) reasons.push("It's free");
-    if (e.endingSoon) reasons.push(`Only ${e.daysLeft} days left`);
+  return filtered.map((e) => applyMatchReason(e, filters));
+}
 
-    return {
-      ...e,
-      matchReason: reasons.length > 0 ? reasons.join(" · ") : "Picked for you",
-    };
-  });
-
-  filtered = filtered.sort(() => Math.random() - 0.5);
-  return filtered.slice(0, 5);
+export function getRecommendedEvents(
+  filters: Filters,
+  excludedIds: string[] = []
+): SiftEvent[] {
+  const candidates = getEventCandidates(filters, excludedIds);
+  const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 5);
 }
