@@ -16,7 +16,7 @@ export interface SiftEvent {
   category: EventCategory;
   description: string;
   location: string;
-  neighborhood: string;
+  address: string;
   borough: "Manhattan" | "Brooklyn" | "Queens" | "Bronx" | "Staten Island";
   startDate: string;
   endDate?: string;
