@@ -11,7 +11,7 @@ import EventCard from "@/components/events/EventCard";
 import EventDetail from "@/components/events/EventDetail";
 import DateRangePicker from "@/components/quiz/DateRangePicker";
 
-import { getRecommendedEvents } from "@/lib/eventRecommendations";
+import { getEventCandidates, getRecommendedEvents } from "@/lib/eventRecommendations";
 import type {
   EventCategory,
   EventDistance,
@@ -103,7 +103,27 @@ export default function Home() {
     (eventId: string) => {
       const nextDismissed = [...dismissedIds, eventId];
       setDismissedIds(nextDismissed);
-      setResults(getRecommendedEvents(filters, nextDismissed));
+
+      setResults((prevResults) => {
+        const removedIndex = prevResults.findIndex((event) => event.id === eventId);
+        if (removedIndex === -1) return prevResults;
+
+        const remainingResults = prevResults.filter((event) => event.id !== eventId);
+
+        const currentIds = remainingResults.map((event) => event.id);
+        const allExcludedIds = [...nextDismissed, ...currentIds];
+
+        const candidates = getEventCandidates(filters, allExcludedIds);
+        const replacement = candidates[0];
+
+        if (!replacement) {
+          return remainingResults;
+        }
+
+        const nextResults = [...remainingResults];
+        nextResults.splice(removedIndex, 0, replacement);
+        return nextResults;
+      });
     },
     [dismissedIds, filters]
   );
