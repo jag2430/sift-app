@@ -21,6 +21,7 @@ export const events: SiftEvent[] = [
     priceLabel: "$0-$30",
     link: "https://whitney.org/exhibitions/2026-biennial",
     tags: ["exhibition", "museum", "contemporary"],
+    imageUrl: "/events/art-001.jpg"
   },
   {
     id: "art-002",
@@ -37,6 +38,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.everywomanbiennial.com/about",
     tags: ["free", "gallery", "contemporary"],
+    imageUrl: "/events/art-002.jpg"
   },
   {
     id: "art-003",
@@ -55,6 +57,7 @@ export const events: SiftEvent[] = [
     endingSoon: true,
     daysLeft: 2,
     tags: ["free", "exhibition"],
+    imageUrl: "/events/art-003.jpg"
   },
   {
     id: "art-004",
@@ -71,6 +74,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $35",
     link: "https://affordableartfair.com/fairs/new-york-spring/?utm_source=google&utm_medium=cpc&utm_campaign=AAFNY-MAR26-S-Brand-EN-AAFNY-MAR26-EXA-V2&utm_term=Brand&gclsrc=aw.ds&gad_source=1&gad_campaignid=23509675602&gbraid=0AAAAACdZ-SJtHkJ7f_I48d8Wcp_VVy1YV&gclid=Cj0KCQjwgr_NBhDFARIsAHiUWr5iQe7b2-fAtnoVrbd0Jdl1Oq1NDlxbGn1ANHn2DV-Gl1Cfn7Z4kxcaAh_FEALw_wcB",
     tags: ["art fair", "spring"],
+    imageUrl: "/events/art-004.jpg"
   },
   {
     id: "art-005",
@@ -87,6 +91,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.instagram.com/p/DVjkKuCEocf/",
     tags: ["popup", "beauty", "fragrance", "free", "soho"],
+    imageUrl: "/events/art-005.jpg"
   },
   {
     id: "art-006",
@@ -103,6 +108,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://events.shopifyny.com/bodenxshopify/mozart?syclid=d6ndo3ar44cs73ahssi0",
     tags: ["popup", "design", "shopping"],
+    imageUrl: "/events/art-006.jpg"
   },
   {
     id: "art-007",
@@ -121,6 +127,7 @@ export const events: SiftEvent[] = [
     endingSoon: true,
     daysLeft: 2,
     tags: ["popup", "fan event", "fashion", "brooklyn", "free"],
+    imageUrl: "/events/art-007.jpg"
   },
 
   // ── MUSIC ─────────────────────────────────────────────
@@ -138,6 +145,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $39",
     link: "https://feverup.com/m/433533?cp_landing=city_selector&cp_landing_term=city_selector&cp_landing_source=candlelightexperience",
     tags: ["candlelight", "classical", "bridgerton"],
+    imageUrl: "/events/mus-001.jpg"
   },
   {
     id: "mus-002",
@@ -153,6 +161,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $47",
     link: "https://feverup.com/m/250335?cp_landing=city_selector&cp_landing_term=city_selector&cp_landing_source=candlelightexperience",
     tags: ["candlelight", "film score", "strings"],
+    imageUrl: "/events/mus-002.jpg"
   },
   {
     id: "mus-003",
@@ -168,6 +177,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $50",
     link: "https://www.axs.com/events/1239151/st-lucia-tickets?cid=usaff_google&source=ev",
     tags: ["concert", "indie pop", "brooklyn"],
+    imageUrl: "/events/mus-003.jpg"
   },
   {
     id: "mus-004",
@@ -183,6 +193,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $35",
     link: "https://www.bandsintown.com/e/1037809176?affil_code=js_www.jessica-audiffred.com&app_id=js_www.jessica-audiffred.com&came_from=700",
     tags: ["concert", "indie pop", "brooklyn"],
+    imageUrl: "/events/mus-004.jpg"
   },
   {
     id: "mus-005",
@@ -198,6 +209,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $170",
     link: "https://www.ticketmaster.com/new-edition-the-new-edition-way-brooklyn-new-york-03-14-2026/event/3000635610717DD6?landing=c",
     tags: ["arena", "r-and-b", "legacy acts"],
+    imageUrl: "/events/mus-005.jpg"
   },
   {
     id: "mus-006",
@@ -213,6 +225,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $36",
     link: "https://www.ticketmaster.com/the-soul-rebels-tickets/artist/1279395",
     tags: ["live music", "brass", "brooklyn"],
+    imageUrl: "/events/mus-006.jpg"
   },
   {
     id: "mus-007",
@@ -228,6 +241,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $36",
     link: "https://www.ticketmaster.com/the-soul-rebels-tickets/artist/1279395",
     tags: ["live music", "brass", "brooklyn"],
+    imageUrl: "/events/mus-007.jpg"
   },
   {
     id: "mus-008",
@@ -243,6 +257,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.lincolncenter.org/series/lincoln-center-presents/mas-tropical-738",
     tags: ["latin", "dance", "brooklyn"],
+    imageUrl: "/events/mus-008.jpg"
   },
 
   // ── COMEDY ─────────────────────────────────────────────
@@ -260,6 +275,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $15",
     link: "https://www.eventbrite.com/e/punderdome-nycs-comedy-pun-slam-compuntition-is-march-18-tickets-1980886028435",
     tags: ["pun", "comedy", "brooklyn"],
+    imageUrl: "/events/com-001.jpg"
   },
   {
     id: "com-002",
@@ -275,6 +291,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $45",
     link: "https://newyorkcomedyclub.com/events/itmatters-ft-santi-espinosa-mahesh-kotagi-alexis-carabano-joe-russell",
     tags: ["stand-up", "club", "uptown"],
+    imageUrl: "/events/com-002.jpg"
   },
   {
     id: "com-003",
@@ -290,6 +307,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $28",
     link: "https://www.eastvillecomedy.com/events/saturday-standup-live-2026-03-14180000",
     tags: ["stand-up", "weekend", "club"],
+    imageUrl: "/events/com-003.jpg"
   },
   {
     id: "com-004",
@@ -305,6 +323,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $28",
     link: "https://www.eastvillecomedy.com/events/saturday-prime-time-comedy-18",
     tags: ["stand-up", "late show", "club"],
+    imageUrl: "/events/com-004.jpg"
   },
   {
     id: "com-005",
@@ -320,6 +339,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $28",
     link: "https://www.broadwaycomedyclub.com/shows/2026-03-14-the-broadway-magic-hour-with-jim-vines-carl-mercurio-200-pm/?_gl=1*yjqyad*_gcl_aw*R0NMLjE3NzMxODI3NDkuQ2owS0NRandncl9OQmhERkFSSXNBSGlVV3I2N0hxU0pHSkluSlJJR1VoR2VsM2VIQmtPVTJROXZvZk50Qi1hSFlzRnB1cVZMeFQtSC1JZ2FBcXVxRUFMd193Y0I.*_gcl_au*MzkyMzg1NzkyLjE3NzMxODI3NDE.*_ga*NDYwNzY0Mjg3LjE3NzMxODI3NDI.*_ga_03QD5MMTMZ*czE3NzMxODI3NDEkbzEkZzEkdDE3NzMxODI3NDgkajUzJGwwJGgw",
     tags: ["magic", "comedy", "midtown"],
+    imageUrl: "/events/com-005.jpg"
   },
 
   // ── FOOD ─────────────────────────────────────────────
@@ -337,6 +357,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $55",
     link: "https://www.thebloodymaryfest.com/new-york-city-3-21-26",
     tags: ["cocktails", "festival", "brunch"],
+    imageUrl: "/events/food-001.jpg"
   },
   {
     id: "food-002",
@@ -352,6 +373,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $89",
     link: "https://www.foodsofny.com/food-tours/chinatown/",
     tags: ["food tour", "walking", "downtown"],
+    imageUrl: "/events/food-002.jpg"
   },
   {
     id: "food-003",
@@ -367,6 +389,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://posh.vip/e/friday-nights-30?t=ro-fri-13",
     tags: ["rooftop", "day party", "drinks"],
+    imageUrl: "/events/food-003.jpg"
   },
   {
     id: "food-004",
@@ -382,6 +405,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $35",
     link: "https://posh.vip/e/st-patricks-day-bar-fest-lower-east-side-3?t=sanpatricks",
     tags: ["rooftop", "day party", "drinks"],
+    imageUrl: "/events/food-004.jpg"
   },
   {
     id: "food-005",
@@ -397,6 +421,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.facebook.com/RitasOfIocustGroveVA/photos/get-ready-to-spring-into-action-%EF%B8%8F-march-20-2025-marks-the-first-day-of-spring-20/493190990519744/?_rdr",
     tags: ["founder event", "drink", "free"],
+    imageUrl: "/events/food-005.jpg"
   },
   {
     id: "food-006",
@@ -413,6 +438,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.instagram.com/reel/DVrLo3bkf6O/?igsh=MWV3djN1MWlpNHJq",
     tags: ["founder event", "drink", "free"],
+    imageUrl: "/events/food-006.jpg"
   },
 
   // ── OUTDOORS ─────────────────────────────────────────────
@@ -421,7 +447,7 @@ export const events: SiftEvent[] = [
     title: "High Line Tour: From Freight to Flowers",
     category: "outdoors",
     description: "Hear the story behind New York City’s park in the sky. Join us for a free tour led by High Line Docents, knowledgeable volunteer guides who offer you an insider’s perspective on the park’s history, design, and landscape.",
-    location: "On the High Line at Gansevoort Street, at the top of the Gansevoort Street stairs",
+    location: "High Line at Gansevoort Street",
     address: "Gansevoort Street, Manhattan, NY 10014",
     borough: "Manhattan",
     startDate: "2026-03-14",
@@ -430,6 +456,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.thehighline.org/events/high-line-tour-from-freight-to-flowers/",
     tags: ["walking tour", "free", "parks"],
+    imageUrl: "/events/out-001.jpg"
   },
   {
     id: "out-002",
@@ -445,13 +472,14 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.nycgovparks.org/events/2026/03/12/arsenal-gallery-celebrating-40-years-of-ebony",
     tags: ["nature", "craft", "free"],
+    imageUrl: "/events/out-002.jpg"
   },
   {
     id: "out-003",
     title: "Volunteering at Conference House Park - The Blue Wave",
     category: "outdoors",
     description: "NYC Parks and the Conference House Park Conservancy for our ongoing beach and park clean-up initiative!",
-    location: "Conference House Museum in Conference House Park",
+    location: "Conference House Museum",
     address: "Flatiron",
     borough: "Staten Island",
     startDate: "2026-03-12",
@@ -460,6 +488,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.nycgovparks.org/events/2026/03/12/volunteering-at-conference-house-park-the-blue-wave",
     tags: ["brand event", "free", "weekday"],
+    imageUrl: "/events/out-003.jpg"
   },
   {
     id: "out-004",
@@ -475,6 +504,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.nycstpatricksparade.org/",
     tags: ["walk", "parks", "free"],
+    imageUrl: "/events/out-004.jpg"
   },
 
   // ── NIGHTLIFE ─────────────────────────────────────────────
@@ -492,6 +522,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $25",
     link: "https://www.elsewhere.club/events/1982040592768",
     tags: ["party", "brooklyn", "late"],
+    imageUrl: "/events/nit-001.jpg"
   },
   {
     id: "nit-002",
@@ -507,6 +538,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $30",
     link: "https://www.flite.city/e/pretty-girls-love-r-b-nyc-2-0-nyc-r-b-exclusive-event?t=flite",
     tags: ["r-and-b", "party", "nightlife"],
+    imageUrl: "/events/nit-002.jpg"
   },
   {
     id: "nit-003",
@@ -522,6 +554,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $30",
     link: "https://www.elsewhere.club/events/1981188701739",
     tags: ["dance", "social", "sunday"],
+    imageUrl: "/events/nit-003.jpg"
   },
   {
     id: "nit-004",
@@ -537,6 +570,7 @@ export const events: SiftEvent[] = [
     priceLabel: "$0 - $25",
     link: "https://www.eventbrite.com/e/friday-march-20th-2026-the-aftermath-pisces-aries-edition-tickets-1983699322072",
     tags: ["club", "friday", "late"],
+    imageUrl: "/events/nit-004.jpg"
   },
   {
     id: "nit-005",
@@ -552,6 +586,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $32",
     link: "https://dice.fm/event/yoa3aa-open-skate-happy-hour-skate-12th-mar-xanadu-new-york-city-tickets?pid=7ffa6eed&_branch_match_id=1488713694586483953&_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1S8zMrUwTU40M7cwsrAvyEyxNU9LSzRLTU1RqytKTUstKsrMS49PKsovL04tsnXOKMrPTQUAPgQEdUgAAAA%3D",
     tags: ["skate", "day disco", "brooklyn"],
+    imageUrl: "/events/nit-005.jpg"
   },
   {
     id: "nit-007",
@@ -567,6 +602,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $15",
     link: "https://dice.fm/event/nv99yq-harry-styles-dance-night-club-14th-mar-xanadu-new-york-city-tickets",
     tags: ["themed", "dance party", "pop"],
+    imageUrl: "/events/nit-007.jpg"
   },
 
   // ── POP-UPS (from NYC for Free) ───────────────────────────────
@@ -585,6 +621,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://fabfitfunbuildaboxpopupnyc.eventbrite.com",
     tags: ["popup", "beauty", "lifestyle", "free", "soho"],
+    imageUrl: "/events/pop-001.jpg"
   },
   {
     id: "pop-002",
@@ -601,6 +638,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.nycforfree.co/events/purito-seoul-fromsoiltoseoul-pop-up",
     tags: ["popup", "skincare", "korean beauty", "free", "west village"],
+    imageUrl: "/events/pop-002.jpg"
   },
   {
     id: "pop-003",
@@ -616,6 +654,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://events.complex.com/complextheplayerschampionship",
     tags: ["popup", "sports", "golf", "interactive", "free"],
+    imageUrl: "/events/pop-003.jpg"
   },
 
   // ── ARTS (from NYC for Free) ───────────────────────────────
@@ -634,6 +673,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.fitnyc.edu/museum/",
     tags: ["free", "exhibition", "fashion", "museum"],
+    imageUrl: "/events/art-008.jpg"
   },
   {
     id: "art-009",
@@ -650,6 +690,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.nytransitmuseum.org/grand-central/",
     tags: ["free", "exhibition", "NYC transit", "local art"],
+    imageUrl: "/events/art-009.jpg"
   },
   {
     id: "art-010",
@@ -666,6 +707,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.macys.com/social/pac-man",
     tags: ["free", "arcade", "interactive", "pop culture"],
+    imageUrl: "/events/art-010.jpg"
   },
   {
     id: "art-011",
@@ -682,6 +724,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.extra-butter.com",
     tags: ["free", "film", "movies", "weekly"],
+    imageUrl: "/events/art-011.jpg"
   },
 
   // ── MUSIC (from NYC for Free) ──────────────────────────────
@@ -699,6 +742,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.vesselnyc.com/battle-of-the-bands",
     tags: ["free", "marching band", "college", "hudson yards"],
+    imageUrl: "/events/mus-009.jpg"
   },
 
   // ── OUTDOORS (from NYC for Free) ──────────────────────────
@@ -716,6 +760,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.eventbrite.com/e/lunar-new-year-celebration-tickets-1982461747453",
     tags: ["free", "cultural", "outdoor", "brooklyn", "lunar new year"],
+    imageUrl: "/events/out-005.jpg"
   },
 
   // ── COMEDY (from NYC for Free) ─────────────────────────────
@@ -733,6 +778,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://app.comedyuo.com/waitlist",
     tags: ["free", "comedy", "march madness", "pop-up"],
+    imageUrl: "/events/com-006.jpg"
   },
 
   // ── FITNESS ────────────────────────────────────────────────
@@ -751,6 +797,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.nycgovparks.org/programs/recreation/fitness",
     tags: ["free", "fitness", "yoga", "parks", "weekend"],
+    imageUrl: "/events/fit-001.jpg"
   },
   {
     id: "fit-002",
@@ -767,6 +814,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.prospecttrackers.org",
     tags: ["free", "running", "group run", "brooklyn", "outdoor"],
+    imageUrl: "/events/fit-002.jpg"
   },
   {
     id: "fit-003",
@@ -783,6 +831,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://november-project.com/new-york-city-ny-usa",
     tags: ["free", "fitness", "outdoor workout", "community", "early morning"],
+    imageUrl: "/events/fit-003.jpg"
   },
   {
     id: "fit-004",
@@ -799,6 +848,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.lululemon.com/en-us/stores/us/new-york/grand-central.html",
     tags: ["free", "running", "midtown", "weekly", "community"],
+    imageUrl: "/events/fit-004.jpg"
   },
 
   // ── THEATER ───────────────────────────────────────────────
@@ -817,6 +867,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free (lottery)",
     link: "https://www.publictheater.org/programs/shakespeare-in-the-park/",
     tags: ["free", "shakespeare", "theater", "central park", "outdoor"],
+    imageUrl: "/events/the-001.jpg"
   },
   {
     id: "the-002",
@@ -833,6 +884,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $15",
     link: "https://www.bam.org",
     tags: ["theater", "emerging artists", "brooklyn", "talkback"],
+    imageUrl: "/events/the-002.jpg"
   },
   {
     id: "the-003",
@@ -849,6 +901,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $20",
     link: "https://www.publictheater.org",
     tags: ["theater", "off-broadway", "new works", "downtown"],
+    imageUrl: "/events/the-003.jpg"
   },
   {
     id: "the-004",
@@ -865,6 +918,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.lincolncenter.org",
     tags: ["free", "outdoor theater", "lincoln center", "weekend"],
+    imageUrl: "/events/the-004.jpg"
   },
 
   // ── WORKSHOPS ─────────────────────────────────────────────
@@ -882,6 +936,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $20",
     link: "https://brooklynbrainery.com",
     tags: ["workshop", "beekeeping", "urban farming", "brooklyn"],
+    imageUrl: "/events/wor-001.jpg"
   },
   {
     id: "wor-002",
@@ -897,13 +952,14 @@ export const events: SiftEvent[] = [
     priceLabel: "From $30",
     link: "https://www.eventbrite.com",
     tags: ["workshop", "photography", "walking", "creative"],
+    imageUrl: "/events/wor-002.jpg"
   },
   {
     id: "wor-003",
     title: "Brooklyn Public Library: Intro to Bookbinding",
     category: "workshops",
     description: "Craft your own hand-sewn journal using traditional bookbinding techniques. All materials provided. Perfect for beginners — no experience needed.",
-    location: "Brooklyn Public Library — Central Branch",
+    location: "Brooklyn Public Library",
     address: "10 Grand Army Plaza, Brooklyn, NY 11238",
     borough: "Brooklyn",
     startDate: "2026-03-21",
@@ -912,6 +968,7 @@ export const events: SiftEvent[] = [
     priceLabel: "Free",
     link: "https://www.bklynlibrary.org",
     tags: ["free", "workshop", "crafts", "bookbinding", "library"],
+    imageUrl: "/events/wor-003.jpg"
   },
   {
     id: "wor-004",
@@ -927,6 +984,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $45",
     link: "https://www.eventbrite.com",
     tags: ["workshop", "textile", "crafts", "sustainable", "brooklyn"],
+    imageUrl: "/events/wor-004.jpg"
   },
   {
     id: "wor-005",
@@ -942,6 +1000,7 @@ export const events: SiftEvent[] = [
     priceLabel: "From $15",
     link: "https://queensbotanical.org",
     tags: ["workshop", "gardening", "queens", "outdoor", "spring"],
+    imageUrl: "/events/wor-005.jpg"
   },
 
 ];
