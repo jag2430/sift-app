@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClientProviders } from "@/components/providers/ClientProviders";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,7 +23,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body style={{ minHeight: '100vh' }}>{children}</body>
+      <body style={{ minHeight: "100vh" }}>
+        <ClientProviders>{children}</ClientProviders>
+      </body>
     </html>
   );
 }

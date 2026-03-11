@@ -1,14 +1,49 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays, DollarSign, MapPin, Sparkles, X } from "lucide-react";
-import type { SiftEvent } from "@/types/event";
+import {
+  Bookmark,
+  CalendarDays,
+  Check,
+  DollarSign,
+  MapPin,
+  Share2,
+  Sparkles,
+  X,
+} from "lucide-react";
+import BottomSheet from "@/components/ui/BottomSheet";
+import { useToast } from "@/components/ui/Toast";
+import { useUser } from "@/context/UserContext";
+import type { EventCategory, SiftEvent } from "@/types/event";
+import SaveToListSheet from "./SaveToListSheet";
+import ShareSheet from "./ShareSheet";
+
+const INTEREST_TO_CATEGORY: Record<string, EventCategory> = {
+  live_music: "music",
+  art_exhibitions: "arts",
+  theater: "arts",
+  workshops: "arts",
+  comedy: "comedy",
+  food: "food",
+  outdoor: "outdoors",
+  nightlife: "nightlife",
+};
+
+function eventMatchesInterests(
+  event: SiftEvent,
+  interests: string[]
+): boolean {
+  return interests.some(
+    (i) => INTEREST_TO_CATEGORY[i] === event.category
+  );
+}
 
 interface EventCardProps {
   event: SiftEvent;
   index: number;
   onClick: () => void;
   onDismiss: () => void;
+  onRequestSignIn?: () => void;
 }
 
 function formatEventDate(event: SiftEvent) {
@@ -23,7 +58,21 @@ export default function EventCard({
   index,
   onClick,
   onDismiss,
+  onRequestSignIn,
 }: EventCardProps) {
+  const { showToast } = useToast();
+  const {
+    isLoggedIn,
+    userProfile,
+    getSavedListForEvent,
+    addSavedEvent,
+    removeSavedEvent,
+    toggleGoing,
+    isGoing,
+  } = useUser();
+  const interests = userProfile?.interests ?? [];
+  const matchesInterests =
+    interests.length > 0 && eventMatchesInterests(event, interests);
   const delay =
     [
       "animate-fade-up",
@@ -35,6 +84,62 @@ export default function EventCard({
 
   const [isDeleteHovered, setIsDeleteHovered] = useState(false);
   const [isDismissing, setIsDismissing] = useState(false);
+  const [saveSheetOpen, setSaveSheetOpen] = useState(false);
+  const [shareSheetOpen, setShareSheetOpen] = useState(false);
+  const [goingPromptOpen, setGoingPromptOpen] = useState(false);
+
+  const savedList = getSavedListForEvent(event.id);
+  const going = isGoing(event.id);
+
+  const handleBookmarkClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (savedList) {
+      removeSavedEvent(event.id);
+      showToast("Removed from list");
+    } else {
+      setSaveSheetOpen(true);
+    }
+  };
+
+  const handleSavedToList = (listName: string) => {
+    showToast(`Saved to ${listName}`);
+  };
+
+  const handleGoingClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (going) {
+      toggleGoing({
+        eventId: event.id,
+        eventTitle: event.title,
+        eventDate: event.startDate,
+      });
+      return;
+    }
+    if (!isLoggedIn) {
+      setGoingPromptOpen(true);
+      return;
+    }
+    toggleGoing({
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: event.startDate,
+    });
+    showToast("Marked as going");
+  };
+
+  const handleGoingConfirm = (signIn: boolean) => {
+    setGoingPromptOpen(false);
+    if (signIn && onRequestSignIn) {
+      onRequestSignIn();
+      return;
+    }
+    toggleGoing({
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: event.startDate,
+    });
+    showToast("Marked as going");
+  };
 
   const handleDismiss = () => {
     if (isDismissing) return;
@@ -99,33 +204,85 @@ export default function EventCard({
           className="sift-card"
           style={{ width: "100%", textAlign: "left", position: "relative" }}
         >
-          <button
-            type="button"
-            aria-label="Dismiss event"
-            onMouseEnter={() => setIsDeleteHovered(true)}
-            onMouseLeave={() => setIsDeleteHovered(false)}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDismiss();
-            }}
+          <div
             style={{
               position: "absolute",
               top: 12,
               right: 12,
               zIndex: 2,
-              width: 32,
-              height: 32,
-              borderRadius: 9999,
-              border: "1px solid hsl(var(--border))",
-              background: "white",
-              display: "inline-flex",
+              display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
+              gap: 6,
             }}
           >
-            <X size={16} strokeWidth={1.5} />
-          </button>
+            <button
+              type="button"
+              aria-label={savedList ? "Remove from list" : "Save to list"}
+              onClick={handleBookmarkClick}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 9999,
+                border: "1px solid hsl(var(--border))",
+                background: "white",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: savedList ? "hsl(var(--primary))" : "hsl(var(--foreground))",
+              }}
+            >
+              <Bookmark
+                size={16}
+                strokeWidth={1.5}
+                fill={savedList ? "currentColor" : "none"}
+              />
+            </button>
+            <button
+              type="button"
+              aria-label="Share"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShareSheetOpen(true);
+              }}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 9999,
+                border: "1px solid hsl(var(--border))",
+                background: "white",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+            >
+              <Share2 size={16} strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
+              aria-label="Dismiss event"
+              onMouseEnter={() => setIsDeleteHovered(true)}
+              onMouseLeave={() => setIsDeleteHovered(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDismiss();
+              }}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 9999,
+                border: "1px solid hsl(var(--border))",
+                background: "white",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+            >
+              <X size={16} strokeWidth={1.5} />
+            </button>
+          </div>
 
           <button
             type="button"
@@ -150,7 +307,7 @@ export default function EventCard({
                   alignItems: "center",
                   gap: 8,
                   marginBottom: 12,
-                  paddingRight: 40,
+                  paddingRight: 112,
                 }}
               >
                 <span className="sift-pill sift-pill-category">
@@ -163,6 +320,17 @@ export default function EventCard({
                 )}
                 {event.price === 0 && (
                   <span className="sift-pill sift-pill-free">Free</span>
+                )}
+                {matchesInterests && (
+                  <span
+                    className="sift-pill"
+                    style={{
+                      color: "hsl(var(--primary))",
+                      backgroundColor: "hsl(var(--primary) / 0.12)",
+                    }}
+                  >
+                    Matches your interests
+                  </span>
                 )}
               </div>
 
@@ -193,8 +361,104 @@ export default function EventCard({
               )}
             </div>
           </button>
+
+          <div
+            style={{
+              padding: "0 1.5rem 1.5rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              position: "relative",
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleGoingClick}
+              className={going ? "sift-btn-primary" : "sift-btn-secondary"}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                padding: "0.5rem 1rem",
+                fontSize: "0.875rem",
+              }}
+            >
+              {going && <Check size={16} strokeWidth={2} />}
+              {going ? "Going" : "Going"}
+            </button>
+            {goingPromptOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "100%",
+                  left: 0,
+                  right: 0,
+                  marginBottom: 8,
+                  padding: 12,
+                  background: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "var(--radius)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  zIndex: 10,
+                }}
+              >
+                <p
+                  className="sift-text-sm"
+                  style={{
+                    marginBottom: 10,
+                    color: "hsl(var(--foreground))",
+                  }}
+                >
+                  Sign in to track your plans
+                </p>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => handleGoingConfirm(true)}
+                    className="sift-btn-primary"
+                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.875rem" }}
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleGoingConfirm(false)}
+                    className="sift-btn-ghost"
+                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.875rem" }}
+                  >
+                    Not now
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      <BottomSheet
+        open={saveSheetOpen}
+        onClose={() => setSaveSheetOpen(false)}
+        title="Save to list"
+      >
+        <SaveToListSheet
+          eventId={event.id}
+          currentListName={savedList}
+          onClose={() => setSaveSheetOpen(false)}
+          onSaved={handleSavedToList}
+        />
+      </BottomSheet>
+      <BottomSheet
+        open={shareSheetOpen}
+        onClose={() => setShareSheetOpen(false)}
+        title="Share"
+      >
+        <ShareSheet
+          eventId={event.id}
+          eventTitle={event.title}
+          onClose={() => setShareSheetOpen(false)}
+        />
+      </BottomSheet>
     </div>
   );
 }

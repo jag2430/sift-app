@@ -443,3 +443,49 @@ h1, h2, h3, h4, h5, h6 {
 .rdp-day_range_end {
   font-weight: 600;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes sift-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOTTOM SHEET
+   ═══════════════════════════════════════════════════════════════ */
+.sift-bottom-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.4);
+  animation: sift-backdrop-in 0.25s ease-out;
+}
+.sift-bottom-sheet-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 91;
+  background: hsl(var(--card));
+  border-radius: var(--radius) var(--radius) 0 0;
+  max-height: 70vh;
+  overflow: auto;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  animation: sift-sheet-up 0.3s ease-out;
+}
+@keyframes sift-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes sift-sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
