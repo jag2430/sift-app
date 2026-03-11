@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Check,
   DollarSign,
+  ImageIcon,
   MapPin,
   Share2,
   Sparkles,
@@ -21,12 +22,14 @@ import ShareSheet from "./ShareSheet";
 const INTEREST_TO_CATEGORY: Record<string, EventCategory> = {
   live_music: "music",
   art_exhibitions: "arts",
-  theater: "arts",
-  workshops: "arts",
+  theater: "theater",
+  workshops: "workshops",
+  fitness: "fitness",
   comedy: "comedy",
   food: "food",
   outdoor: "outdoors",
   nightlife: "nightlife",
+  popups: "popups",
 };
 
 function eventMatchesInterests(
@@ -73,16 +76,9 @@ export default function EventCard({
   const interests = userProfile?.interests ?? [];
   const matchesInterests =
     interests.length > 0 && eventMatchesInterests(event, interests);
-  const delay =
-    [
-      "animate-fade-up",
-      "animate-fade-up-delay-1",
-      "animate-fade-up-delay-2",
-      "animate-fade-up-delay-3",
-      "animate-fade-up-delay-4",
-    ][index] || "animate-fade-up-delay-4";
 
-  const [isDeleteHovered, setIsDeleteHovered] = useState(false);
+  const animDelay = index === 0 ? 0 : index === 1 ? 60 : index === 2 ? 120 : index === 3 ? 180 : 240;
+
   const [isDismissing, setIsDismissing] = useState(false);
   const [saveSheetOpen, setSaveSheetOpen] = useState(false);
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
@@ -141,78 +137,85 @@ export default function EventCard({
     showToast("Marked as going");
   };
 
-  const handleDismiss = () => {
+  const handleDismiss = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (isDismissing) return;
     setIsDismissing(true);
     window.setTimeout(() => {
       onDismiss();
-    }, 220);
+    }, 320);
   };
 
   return (
     <div
-      className={delay}
       style={{
-        position: "relative",
-        width: "100%",
+        perspective: "800px",
+        animationDelay: `${animDelay}ms`,
+        animationFillMode: "both",
       }}
+      className="animate-fade-up"
     >
       <div
         style={{
-          position: "absolute",
-          inset: 0,
-          borderRadius: "var(--radius)",
-          background: "rgba(220, 38, 38, 0.10)",
-          border: "1px solid rgba(220, 38, 38, 0.18)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-end",
-          paddingRight: 14,
-          opacity: isDeleteHovered || isDismissing ? 1 : 0,
-          transition: "opacity 0.2s ease",
-          pointerEvents: "none",
-        }}
-      >
-        <div
-          style={{
-            width: 34,
-            height: 34,
-            borderRadius: 9999,
-            background: "rgba(220, 38, 38, 0.14)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "rgb(185, 28, 28)",
-          }}
-        >
-          <X size={16} strokeWidth={1.75} />
-        </div>
-      </div>
-
-      <div
-        style={{
-          transform: isDismissing
-            ? "translateX(-88px)"
-            : isDeleteHovered
-            ? "translateX(-10px)"
-            : "translateX(0)",
-          opacity: isDismissing ? 0 : 1,
-          transition: "transform 0.22s ease, opacity 0.22s ease",
+          transition: "transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s ease",
+          ...(isDismissing && {
+            transform: "rotateY(90deg) scale(0.85)",
+            opacity: 0,
+            transformOrigin: "right center",
+          }),
         }}
       >
         <div
           className="sift-card"
-          style={{ width: "100%", textAlign: "left", position: "relative" }}
+          style={{
+            width: "100%",
+            textAlign: "left",
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            overflow: "hidden",
+          }}
         >
+          {/* ── Image / placeholder ────────────────── */}
+          {event.imageUrl ? (
+            <img
+              src={event.imageUrl}
+              alt={event.title}
+              style={{
+                width: "100%",
+                height: 160,
+                objectFit: "cover",
+                display: "block",
+                flexShrink: 0,
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: 160,
+                background: "hsl(240 7% 90%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <ImageIcon size={28} strokeWidth={1} style={{ color: "hsl(240 5% 72%)" }} />
+            </div>
+          )}
+
+          {/* ── Top action row ─────────────────────── */}
           <div
             style={{
               position: "absolute",
-              top: 12,
-              right: 12,
+              top: 10,
+              right: 10,
               zIndex: 2,
               display: "flex",
               alignItems: "center",
-              gap: 6,
+              gap: 4,
             }}
           >
             <button
@@ -220,8 +223,8 @@ export default function EventCard({
               aria-label={savedList ? "Remove from list" : "Save to list"}
               onClick={handleBookmarkClick}
               style={{
-                width: 32,
-                height: 32,
+                width: 28,
+                height: 28,
                 borderRadius: 9999,
                 border: "1px solid hsl(var(--border))",
                 background: "white",
@@ -233,7 +236,7 @@ export default function EventCard({
               }}
             >
               <Bookmark
-                size={16}
+                size={13}
                 strokeWidth={1.5}
                 fill={savedList ? "currentColor" : "none"}
               />
@@ -246,8 +249,8 @@ export default function EventCard({
                 setShareSheetOpen(true);
               }}
               style={{
-                width: 32,
-                height: 32,
+                width: 28,
+                height: 28,
                 borderRadius: 9999,
                 border: "1px solid hsl(var(--border))",
                 background: "white",
@@ -257,20 +260,15 @@ export default function EventCard({
                 cursor: "pointer",
               }}
             >
-              <Share2 size={16} strokeWidth={1.5} />
+              <Share2 size={13} strokeWidth={1.5} />
             </button>
             <button
               type="button"
-              aria-label="Dismiss event"
-              onMouseEnter={() => setIsDeleteHovered(true)}
-              onMouseLeave={() => setIsDeleteHovered(false)}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDismiss();
-              }}
+              aria-label="Dismiss"
+              onClick={handleDismiss}
               style={{
-                width: 32,
-                height: 32,
+                width: 28,
+                height: 28,
                 borderRadius: 9999,
                 border: "1px solid hsl(var(--border))",
                 background: "white",
@@ -278,16 +276,19 @@ export default function EventCard({
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
+                color: "hsl(var(--secondary))",
               }}
             >
-              <X size={16} strokeWidth={1.5} />
+              <X size={13} strokeWidth={2} />
             </button>
           </div>
 
+          {/* ── Card body (clickable) ───────────────── */}
           <button
             type="button"
             onClick={onClick}
             style={{
+              flex: 1,
               width: "100%",
               textAlign: "left",
               cursor: "pointer",
@@ -301,13 +302,15 @@ export default function EventCard({
                 event.endingSoon ? "sift-card-inner--ending" : ""
               }`}
             >
+              {/* Pills */}
               <div
                 style={{
                   display: "flex",
+                  flexWrap: "wrap",
                   alignItems: "center",
-                  gap: 8,
-                  marginBottom: 12,
-                  paddingRight: 112,
+                  gap: 6,
+                  marginBottom: 10,
+                  paddingRight: 96,
                 }}
               >
                 <span className="sift-pill sift-pill-category">
@@ -315,7 +318,7 @@ export default function EventCard({
                 </span>
                 {event.endingSoon && (
                   <span className="sift-pill sift-pill-ending">
-                    Ends in {event.daysLeft} days
+                    Ends in {event.daysLeft}d
                   </span>
                 )}
                 {event.price === 0 && (
@@ -329,42 +332,51 @@ export default function EventCard({
                       backgroundColor: "hsl(var(--primary) / 0.12)",
                     }}
                   >
-                    Matches your interests
+                    <Sparkles size={11} strokeWidth={1.5} style={{ display: "inline", marginRight: 3 }} />
+                    For you
                   </span>
                 )}
               </div>
 
-              <h3 className="sift-h3" style={{ marginBottom: 8 }}>
+              {/* Title */}
+              <h3
+                className="sift-h3"
+                style={{ marginBottom: 10, fontSize: "0.95rem", lineHeight: 1.35 }}
+              >
                 {event.title}
               </h3>
 
-              <div className="sift-meta" style={{ marginBottom: 12 }}>
+              {/* Meta */}
+              <div className="sift-meta" style={{ marginBottom: 0, flexDirection: "column", gap: 4 }}>
                 <span className="sift-meta-item">
-                  <MapPin size={14} strokeWidth={1.5} />
-                  {event.location}
+                  <MapPin size={12} strokeWidth={1.5} />
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {event.location}
+                  </span>
                 </span>
                 <span className="sift-meta-item">
-                  <CalendarDays size={14} strokeWidth={1.5} />
+                  <CalendarDays size={12} strokeWidth={1.5} />
                   {formatEventDate(event)}
                 </span>
                 <span className="sift-meta-item">
-                  <DollarSign size={14} strokeWidth={1.5} />
+                  <DollarSign size={12} strokeWidth={1.5} />
                   {event.priceLabel}
                 </span>
               </div>
 
               {event.matchReason && (
-                <p className="sift-match">
-                  <Sparkles size={14} strokeWidth={1.5} />
-                  Matched because: {event.matchReason}
+                <p className="sift-match" style={{ marginTop: 10, marginBottom: 0 }}>
+                  <Sparkles size={12} strokeWidth={1.5} />
+                  {event.matchReason}
                 </p>
               )}
             </div>
           </button>
 
+          {/* ── Footer actions ──────────────────────── */}
           <div
             style={{
-              padding: "0 1.5rem 1.5rem",
+              padding: "0 1.25rem 1.25rem",
               display: "flex",
               flexDirection: "column",
               gap: 8,
@@ -380,11 +392,11 @@ export default function EventCard({
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 6,
-                padding: "0.5rem 1rem",
-                fontSize: "0.875rem",
+                padding: "0.45rem 1rem",
+                fontSize: "0.82rem",
               }}
             >
-              {going && <Check size={16} strokeWidth={2} />}
+              {going && <Check size={14} strokeWidth={2} />}
               {going ? "Going" : "Going"}
             </button>
             {goingPromptOpen && (
@@ -405,10 +417,7 @@ export default function EventCard({
               >
                 <p
                   className="sift-text-sm"
-                  style={{
-                    marginBottom: 10,
-                    color: "hsl(var(--foreground))",
-                  }}
+                  style={{ marginBottom: 10, color: "hsl(var(--foreground))" }}
                 >
                   Sign in to track your plans
                 </p>
@@ -417,7 +426,7 @@ export default function EventCard({
                     type="button"
                     onClick={() => handleGoingConfirm(true)}
                     className="sift-btn-primary"
-                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.875rem" }}
+                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.8rem" }}
                   >
                     Sign in
                   </button>
@@ -425,7 +434,7 @@ export default function EventCard({
                     type="button"
                     onClick={() => handleGoingConfirm(false)}
                     className="sift-btn-ghost"
-                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.875rem" }}
+                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.8rem" }}
                   >
                     Not now
                   </button>

@@ -7,6 +7,7 @@ import {
   CalendarDays,
   Check,
   ExternalLink,
+  ImageIcon,
   MapPin,
   Share2,
 } from "lucide-react";
@@ -105,7 +106,34 @@ export default function EventDetail({
         Back to results
       </button>
 
-      <div className="sift-card" style={{ position: "relative" }}>
+      <div className="sift-card" style={{ position: "relative", overflow: "hidden" }}>
+        {/* ── Image / placeholder ──────────────────── */}
+        {event.imageUrl ? (
+          <img
+            src={event.imageUrl}
+            alt={event.title}
+            style={{
+              width: "100%",
+              height: 260,
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: "100%",
+              height: 260,
+              background: "hsl(240 7% 90%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ImageIcon size={40} strokeWidth={1} style={{ color: "hsl(240 5% 72%)" }} />
+          </div>
+        )}
+
         <div
           style={{
             position: "absolute",

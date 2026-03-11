@@ -18,14 +18,16 @@ import ProfileScreen from "@/components/profile/ProfileScreen";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 
 import { useUser } from "@/context/UserContext";
-import { getEventCandidates, getRecommendedEvents } from "@/lib/eventRecommendations";
+import { getAllCandidates, getNextCandidate } from "@/lib/eventRecommendations";
+import ResultsFilterBar from "@/components/results/ResultsFilterBar";
 import { hasOnboardingDoneFlag } from "@/lib/sessionFlags";
 import type {
   EventCategory,
   EventDistance,
-  PriceRange,
   SiftEvent,
 } from "@/types/event";
+
+interface Slot { event: SiftEvent; key: string; }
 import type { Filters, Step } from "@/types/quiz";
 import type { DateRange } from "react-day-picker";
 
@@ -41,13 +43,6 @@ const categories: { value: EventCategory; label: string; emoji: string }[] = [
   { value: "theater", label: "Theater", emoji: "🎭" },
   { value: "workshops", label: "Workshops", emoji: "🛠️" },
   { value: "popups", label: "Pop-ups & Sample Sales", emoji: "🛍️" },
-];
-
-const prices: { value: PriceRange; label: string }[] = [
-  { value: "free", label: "Free only" },
-  { value: "under-20", label: "Under $20" },
-  { value: "under-50", label: "Under $50" },
-  { value: "any", label: "Price doesn't matter" },
 ];
 
 const distances: { value: EventDistance; label: string; desc: string }[] = [
@@ -96,10 +91,10 @@ export default function Home() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [step, setStep] = useState<Step>("welcome");
   const [filters, setFilters] = useState<Filters>({});
-  const [results, setResults] = useState<SiftEvent[]>([]);
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<SiftEvent | null>(null);
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>();
-  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
 
 
   const handleContinueAsGuest = useCallback(() => {
@@ -118,17 +113,34 @@ export default function Home() {
   const reset = useCallback(() => {
     setStep("welcome");
     setFilters({});
-    setResults([]);
+    setSlots([]);
+    setDismissedIds([]);
     setSelectedEvent(null);
     setSelectedRange(undefined);
-    setDismissedIds([]);
   }, []);
-  const goToResults = useCallback((f: Filters, excludedIds: string[] = []) => {
-    setResults(getRecommendedEvents(f, excludedIds));
+  const goToResults = useCallback((f: Filters) => {
+    const candidates = getAllCandidates(f);
+    const initial: Slot[] = candidates.slice(0, 3).map((e) => ({
+      event: e,
+      key: `${e.id}-${Date.now()}-${Math.random()}`,
+    }));
+    setSlots(initial);
+    setDismissedIds([]);
     setStep("results");
   }, []);
+
+  const handleFiltersChange = useCallback((newFilters: Filters) => {
+    setFilters(newFilters);
+    const candidates = getAllCandidates(newFilters);
+    const newSlots: Slot[] = candidates.slice(0, 3).map((e) => ({
+      event: e,
+      key: `${e.id}-${Date.now()}-${Math.random()}`,
+    }));
+    setSlots(newSlots);
+    setDismissedIds([]);
+  }, []);
   const handleBack = useCallback(() => {
-    const flow: Step[] = ["welcome", "category", "date", "distance", "price", "results"];
+    const flow: Step[] = ["welcome", "category", "date", "distance", "results"];
     const idx = flow.indexOf(step);
     if (idx > 0) setStep(flow[idx - 1]);
   }, [step]);
@@ -136,29 +148,19 @@ export default function Home() {
     (eventId: string) => {
       const nextDismissed = [...dismissedIds, eventId];
       setDismissedIds(nextDismissed);
-
-      setResults((prevResults) => {
-        const removedIndex = prevResults.findIndex((event) => event.id === eventId);
-        if (removedIndex === -1) return prevResults;
-
-        const remainingResults = prevResults.filter((event) => event.id !== eventId);
-
-        const currentIds = remainingResults.map((event) => event.id);
-        const allExcludedIds = [...nextDismissed, ...currentIds];
-
-        const candidates = getEventCandidates(filters, allExcludedIds);
-        const replacement = candidates[0];
-
-        if (!replacement) {
-          return remainingResults;
-        }
-
-        const nextResults = [...remainingResults];
-        nextResults.splice(removedIndex, 0, replacement);
-        return nextResults;
+      setSlots((prev) => {
+        const idx = prev.findIndex((s) => s.event.id === eventId);
+        if (idx === -1) return prev;
+        const shownIds = prev.map((s) => s.event.id).filter((id) => id !== eventId);
+        const excluded = [...nextDismissed, ...shownIds];
+        const next = getNextCandidate(excluded, filters, userProfile);
+        if (!next) return prev.filter((_, i) => i !== idx);
+        const updated = [...prev];
+        updated[idx] = { event: next, key: `${next.id}-${Date.now()}-${Math.random()}` };
+        return updated;
       });
     },
-    [dismissedIds, filters]
+    [dismissedIds, filters, userProfile]
   );
 
   // ── AUTH GATE ─────────────────────────────────────────────
@@ -290,7 +292,6 @@ export default function Home() {
           )}
           {(step === "category" ||
             step === "date" ||
-            step === "price" ||
             step === "distance") && (
             <>
               <ProgressBar step={step} />
@@ -306,7 +307,7 @@ export default function Home() {
                 <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginBottom: 32, lineHeight: 1.625 }}>Pick one to start.</p>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   {categories.map((c) => (
-                    <OptionCard key={c.value} selected={filters.category === c.value} onClick={() => { setFilters((f) => ({ ...f, category: c.value })); setTimeout(() => setStep("date"), 200); }}>
+                    <OptionCard key={c.value} selected={filters.categories?.[0] === c.value} onClick={() => { setFilters((f) => ({ ...f, categories: [c.value] })); setTimeout(() => setStep("date"), 200); }}>
                       <span style={{ fontSize: "1.5rem", display: "block", marginBottom: 4 }}>{c.emoji}</span>
                       <span style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{c.label}</span>
                     </OptionCard>
@@ -358,29 +359,7 @@ export default function Home() {
               </div>
             )}
 
-            {step === "price" && (
-              <div className="animate-fade-up">
-                <h2 className="sift-section-heading" style={{ marginBottom: 8 }}>What&rsquo;s your budget?</h2>
-                <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginBottom: 32, lineHeight: 1.625 }}>Per person, roughly.</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {prices.map((p) => (
-                    <OptionCard
-                      key={p.value}
-                      selected={filters.price === p.value}
-                      onClick={() => {
-                        const f = { ...filters, price: p.value };
-                        setFilters(f);
-                        setTimeout(() => goToResults(f), 200);
-                      }}
-                    >
-                      <span style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{p.label}</span>
-                    </OptionCard>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {step === "distance" && (
+{step === "distance" && (
               <div className="animate-fade-up">
                 <h2 className="sift-section-heading" style={{ marginBottom: 8 }}>How far will you go?</h2>
                 <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginBottom: 32, lineHeight: 1.625 }}>We&rsquo;ll keep it relevant.</p>
@@ -390,8 +369,9 @@ export default function Home() {
                       key={d.value}
                       selected={filters.distance === d.value}
                       onClick={() => {
-                        setFilters((f) => ({ ...f, distance: d.value }));
-                        setTimeout(() => setStep("price"), 200);
+                        const f = { ...filters, distance: d.value };
+                        setFilters(f);
+                        setTimeout(() => goToResults(f), 200);
                       }}
                     >
                       <span style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{d.label}</span>
@@ -420,7 +400,7 @@ export default function Home() {
                 </main>
               ) : (
                 <main style={{ flex: 1, padding: "6rem 1.5rem 4rem" }}>
-                  <div style={{ maxWidth: 720, margin: "0 auto" }}>
+                  <div style={{ maxWidth: 960, margin: "0 auto" }}>
                     <div
                       className="animate-fade-up"
                       style={{ marginBottom: 32 }}
@@ -469,7 +449,7 @@ export default function Home() {
                         className="sift-section-heading"
                         style={{ marginBottom: 8 }}
                       >
-                        {results.length > 0
+                        {slots.length > 0
                           ? "Here\u2019s what we found"
                           : "Hmm, nothing matched"}
                       </h2>
@@ -480,70 +460,35 @@ export default function Home() {
                           lineHeight: 1.625,
                         }}
                       >
-                        {results.length > 0
-                          ? `${results.length} things worth your time this weekend.`
+                        {slots.length > 0
+                          ? "Tap a card to learn more, or \u2715 to swap it out."
                           : "Try broadening your filters \u2014 or just explore everything."}
                       </p>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: 8,
-                          marginTop: 16,
-                        }}
-                      >
-                        {filters.category && (
-                          <span className="sift-filter-pill">
-                            {categories.find(
-                              (c) => c.value === filters.category
-                            )?.label}
-                          </span>
-                        )}
-                        {filters.dateFrom && filters.dateTo && (
-                          <span className="sift-filter-pill">
-                            {formatSelectedDateRange(
-                              filters.dateFrom,
-                              filters.dateTo
-                            )}
-                          </span>
-                        )}
-                        {filters.distance && (
-                          <span className="sift-filter-pill">
-                            {distances.find(
-                              (d) => d.value === filters.distance
-                            )?.label}
-                          </span>
-                        )}
-                        {filters.price && (
-                          <span className="sift-filter-pill">
-                            {prices.find(
-                              (p) => p.value === filters.price
-                            )?.label}
-                          </span>
-                        )}
+                      <div style={{ marginTop: 16, position: "relative", zIndex: 50 }}>
+                        <ResultsFilterBar
+                          filters={filters}
+                          onChange={handleFiltersChange}
+                        />
                       </div>
                     </div>
 
-                    {results.length > 0 ? (
+                    {slots.length > 0 ? (
                       <div
                         style={{
-                          display: "flex",
-                          flexDirection: "column",
+                          display: "grid",
+                          gridTemplateColumns: "repeat(3, 1fr)",
                           gap: 16,
+                          alignItems: "start",
                         }}
                       >
-                        {results.map((event, i) => (
+                        {slots.map((slot, i) => (
                           <EventCard
-                            key={event.id}
-                            event={event}
+                            key={slot.key}
+                            event={slot.event}
                             index={i}
-                            onClick={() => setSelectedEvent(event)}
-                            onDismiss={() =>
-                              handleDismissEvent(event.id)
-                            }
-                            onRequestSignIn={() =>
-                              setAuthView("signin")
-                            }
+                            onClick={() => setSelectedEvent(slot.event)}
+                            onDismiss={() => handleDismissEvent(slot.event.id)}
+                            onRequestSignIn={() => setAuthView("signin")}
                           />
                         ))}
                       </div>

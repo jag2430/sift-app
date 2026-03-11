@@ -9,13 +9,15 @@ export type Step =
   | "category"
   | "date"
   | "distance"
-  | "price"
   | "results";
 
+export type Vibe = "hidden_gems" | "popular" | "surprise_me";
+
 export interface Filters {
-  category?: EventCategory;
+  categories?: EventCategory[];
   dateFrom?: string;
   dateTo?: string;
   price?: PriceRange;
   distance?: EventDistance;
+  vibe?: Vibe;
 }

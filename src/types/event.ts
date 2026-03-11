@@ -18,6 +18,7 @@ export interface SiftEvent {
   id: string;
   title: string;
   category: EventCategory;
+  imageUrl?: string;
   description: string;
   location: string;
   address: string;
