@@ -155,6 +155,9 @@ export default function EventDetail({
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
+              background: "rgba(255, 255, 255, 0.85)",
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
             }}
           >
             <Bookmark
@@ -174,6 +177,9 @@ export default function EventDetail({
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
+              background: "rgba(255, 255, 255, 0.85)",
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
             }}
           >
             <Share2 size={18} strokeWidth={1.5} />

@@ -220,7 +220,7 @@ export default function Home() {
         userDisplayName={userDisplayName}
       />
       {activeTab === "profile" ? (
-        <main style={{ flex: 1 }}>
+        <main style={{ flex: 1, paddingTop: "5rem" }}>
           <ProfileScreen
             onEditPreferences={() => setShowOnboarding(true)}
             onSignIn={() => setAuthView("signin")}
