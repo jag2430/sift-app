@@ -4,7 +4,11 @@ export type EventCategory =
   | "comedy"
   | "food"
   | "outdoors"
-  | "nightlife";
+  | "nightlife"
+  | "fitness"
+  | "theater"
+  | "workshops"
+  | "popups";
 
 export type EventDistance = "neighborhood" | "borough" | "anywhere";
 

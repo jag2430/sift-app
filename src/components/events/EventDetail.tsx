@@ -1,9 +1,26 @@
-import { ArrowLeft, CalendarDays, ExternalLink, MapPin } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import {
+  ArrowLeft,
+  Bookmark,
+  CalendarDays,
+  Check,
+  ExternalLink,
+  MapPin,
+  Share2,
+} from "lucide-react";
+import BottomSheet from "@/components/ui/BottomSheet";
+import { useToast } from "@/components/ui/Toast";
+import { useUser } from "@/context/UserContext";
 import type { SiftEvent } from "@/types/event";
+import SaveToListSheet from "./SaveToListSheet";
+import ShareSheet from "./ShareSheet";
 
 interface EventDetailProps {
   event: SiftEvent;
   onBack: () => void;
+  onRequestSignIn?: () => void;
 }
 
 function formatEventDate(event: SiftEvent) {
@@ -13,7 +30,74 @@ function formatEventDate(event: SiftEvent) {
   return event.startDate;
 }
 
-export default function EventDetail({ event, onBack }: EventDetailProps) {
+export default function EventDetail({
+  event,
+  onBack,
+  onRequestSignIn,
+}: EventDetailProps) {
+  const { showToast } = useToast();
+  const {
+    isLoggedIn,
+    getSavedListForEvent,
+    removeSavedEvent,
+    toggleGoing,
+    isGoing,
+  } = useUser();
+  const [saveSheetOpen, setSaveSheetOpen] = useState(false);
+  const [shareSheetOpen, setShareSheetOpen] = useState(false);
+  const [goingPromptOpen, setGoingPromptOpen] = useState(false);
+
+  const savedList = getSavedListForEvent(event.id);
+  const going = isGoing(event.id);
+
+  const handleBookmarkClick = () => {
+    if (savedList) {
+      removeSavedEvent(event.id);
+      showToast("Removed from list");
+    } else {
+      setSaveSheetOpen(true);
+    }
+  };
+
+  const handleSavedToList = (listName: string) => {
+    showToast(`Saved to ${listName}`);
+  };
+
+  const handleGoingClick = () => {
+    if (going) {
+      toggleGoing({
+        eventId: event.id,
+        eventTitle: event.title,
+        eventDate: event.startDate,
+      });
+      return;
+    }
+    if (!isLoggedIn) {
+      setGoingPromptOpen(true);
+      return;
+    }
+    toggleGoing({
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: event.startDate,
+    });
+    showToast("Marked as going");
+  };
+
+  const handleGoingConfirm = (signIn: boolean) => {
+    setGoingPromptOpen(false);
+    if (signIn && onRequestSignIn) {
+      onRequestSignIn();
+      return;
+    }
+    toggleGoing({
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: event.startDate,
+    });
+    showToast("Marked as going");
+  };
+
   return (
     <div className="animate-fade-up">
       <button onClick={onBack} className="sift-btn-ghost" style={{ marginBottom: 24 }}>
@@ -21,7 +105,53 @@ export default function EventDetail({ event, onBack }: EventDetailProps) {
         Back to results
       </button>
 
-      <div className="sift-card">
+      <div className="sift-card" style={{ position: "relative" }}>
+        <div
+          style={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+            zIndex: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <button
+            type="button"
+            aria-label={savedList ? "Remove from list" : "Save to list"}
+            onClick={handleBookmarkClick}
+            className="sift-btn-secondary"
+            style={{
+              padding: "8px 12px",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <Bookmark
+              size={18}
+              strokeWidth={1.5}
+              fill={savedList ? "currentColor" : "none"}
+            />
+            {savedList ? "Saved" : "Save"}
+          </button>
+          <button
+            type="button"
+            aria-label="Share"
+            onClick={() => setShareSheetOpen(true)}
+            className="sift-btn-secondary"
+            style={{
+              padding: "8px 12px",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <Share2 size={18} strokeWidth={1.5} />
+            Share
+          </button>
+        </div>
         <div className={`sift-card-inner ${event.endingSoon ? "sift-card-inner--ending" : ""}`}>
           <div
             style={{
@@ -30,6 +160,7 @@ export default function EventDetail({ event, onBack }: EventDetailProps) {
               alignItems: "center",
               gap: 8,
               marginBottom: 16,
+              paddingRight: 140,
             }}
           >
             <span className="sift-pill sift-pill-category">{event.category}</span>
@@ -117,17 +248,101 @@ export default function EventDetail({ event, onBack }: EventDetailProps) {
             ))}
           </div>
 
-          <a
-            href={event.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="sift-btn-primary"
-          >
-            Check it out
-            <ExternalLink size={16} strokeWidth={1.5} />
-          </a>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
+            <a
+              href={event.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sift-btn-primary"
+            >
+              Check it out
+              <ExternalLink size={16} strokeWidth={1.5} />
+            </a>
+            <button
+              type="button"
+              onClick={handleGoingClick}
+              className={going ? "sift-btn-primary" : "sift-btn-secondary"}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              {going && <Check size={16} strokeWidth={2} />}
+              {going ? "Going" : "Going"}
+            </button>
+            {goingPromptOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: "100%",
+                  marginBottom: 8,
+                  padding: 12,
+                  background: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "var(--radius)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  zIndex: 10,
+                }}
+              >
+                <p
+                  className="sift-text-sm"
+                  style={{
+                    marginBottom: 10,
+                    color: "hsl(var(--foreground))",
+                  }}
+                >
+                  Sign in to track your plans
+                </p>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => handleGoingConfirm(true)}
+                    className="sift-btn-primary"
+                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.875rem" }}
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleGoingConfirm(false)}
+                    className="sift-btn-ghost"
+                    style={{ flex: 1, padding: "0.5rem", fontSize: "0.875rem" }}
+                  >
+                    Not now
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      <BottomSheet
+        open={saveSheetOpen}
+        onClose={() => setSaveSheetOpen(false)}
+        title="Save to list"
+      >
+        <SaveToListSheet
+          eventId={event.id}
+          currentListName={savedList}
+          onClose={() => setSaveSheetOpen(false)}
+          onSaved={handleSavedToList}
+        />
+      </BottomSheet>
+      <BottomSheet
+        open={shareSheetOpen}
+        onClose={() => setShareSheetOpen(false)}
+        title="Share"
+      >
+        <ShareSheet
+          eventId={event.id}
+          eventTitle={event.title}
+          onClose={() => setShareSheetOpen(false)}
+        />
+      </BottomSheet>
     </div>
   );
 }
