@@ -478,7 +478,7 @@ export default function Home() {
                           display: "grid",
                           gridTemplateColumns: "repeat(3, 1fr)",
                           gap: 16,
-                          alignItems: "start",
+                          alignItems: "stretch",
                         }}
                       >
                         {slots.map((slot, i) => (

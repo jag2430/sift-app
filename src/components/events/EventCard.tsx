@@ -152,12 +152,14 @@ export default function EventCard({
         perspective: "800px",
         animationDelay: `${animDelay}ms`,
         animationFillMode: "both",
+        height: "100%",
       }}
       className="animate-fade-up"
     >
       <div
         style={{
           transition: "transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s ease",
+          height: "100%",
           ...(isDismissing && {
             transform: "rotateY(90deg) scale(0.85)",
             opacity: 0,
@@ -295,12 +297,15 @@ export default function EventCard({
               background: "transparent",
               border: "none",
               padding: 0,
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             <div
               className={`sift-card-inner ${
                 event.endingSoon ? "sift-card-inner--ending" : ""
               }`}
+              style={{ flex: 1, display: "flex", flexDirection: "column" }}
             >
               {/* Pills */}
               <div
@@ -347,7 +352,7 @@ export default function EventCard({
               </h3>
 
               {/* Meta */}
-              <div className="sift-meta" style={{ marginBottom: 0, flexDirection: "column", gap: 4 }}>
+              <div className="sift-meta" style={{ marginTop: "auto", marginBottom: 0, flexDirection: "column", gap: 4 }}>
                 <span className="sift-meta-item">
                   <MapPin size={12} strokeWidth={1.5} />
                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
