@@ -465,8 +465,9 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   inset: 0;
   z-index: 90;
-  background: rgba(0, 0, 0, 0.4);
-  animation: sift-backdrop-in 0.25s ease-out;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
 }
 .sift-bottom-sheet-panel {
   position: fixed;

@@ -64,12 +64,22 @@ function PortalPanel({ anchorRef, panelRef, alignRight, children, extraStyle }: 
 
   useLayoutEffect(() => {
     if (!anchorRef.current) return;
-    const r = anchorRef.current.getBoundingClientRect();
-    if (alignRight) {
-      setCoords({ top: r.bottom + 6, right: window.innerWidth - r.right });
-    } else {
-      setCoords({ top: r.bottom + 6, left: r.left });
-    }
+    const updatePosition = () => {
+      if (!anchorRef.current) return;
+      const r = anchorRef.current.getBoundingClientRect();
+      if (alignRight) {
+        setCoords({ top: r.bottom + 6, right: window.innerWidth - r.right });
+      } else {
+        setCoords({ top: r.bottom + 6, left: r.left });
+      }
+    };
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
   }, [anchorRef, alignRight]);
 
   if (!coords) return null;
