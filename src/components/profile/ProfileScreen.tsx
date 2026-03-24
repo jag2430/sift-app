@@ -227,15 +227,48 @@ export default function ProfileScreen({
       )}
 
       <section style={{ marginBottom: 24 }}>
-        <h3 className="sift-h3" style={{ marginBottom: 8 }}>
+        <h3 className="sift-h3" style={{ marginBottom: 12 }}>
           Quick Stats
         </h3>
-        <p className="sift-text-sm" style={{ color: "hsl(var(--secondary))" }}>
-          {savedEvents.length} events saved · {goingEvents.length} events going
-          {createdAt && (
-            <> · Member since {new Date(createdAt).toLocaleDateString("en-US")}</>
-          )}
-        </p>
+        <div style={{ display: "flex", gap: 12 }}>
+          <div
+            style={{
+              flex: 1,
+              background: "hsl(var(--muted))",
+              borderRadius: "var(--radius)",
+              padding: "16px 12px",
+              textAlign: "center",
+            }}
+          >
+            <p style={{ fontSize: "1.5rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1 }}>
+              {savedEvents.length}
+            </p>
+            <p className="sift-text-xs" style={{ color: "hsl(var(--secondary))", marginTop: 4 }}>
+              Events Saved
+            </p>
+          </div>
+          <div
+            style={{
+              flex: 1,
+              background: "hsl(var(--muted))",
+              borderRadius: "var(--radius)",
+              padding: "16px 12px",
+              textAlign: "center",
+            }}
+          >
+            <p style={{ fontSize: "1.5rem", fontWeight: 700, color: "hsl(var(--foreground))", lineHeight: 1 }}>
+              {goingEvents.length}
+            </p>
+            <p className="sift-text-xs" style={{ color: "hsl(var(--secondary))", marginTop: 4 }}>
+              Events Going
+            </p>
+          </div>
+        </div>
+        {createdAt && (
+          <p className="sift-text-xs" style={{ color: "hsl(var(--secondary))", marginTop: 8, textAlign: "center" }}>
+            Member since {new Date(createdAt).toLocaleDateString("en-US")}
+          </p>
+        )}
       </section>
     </div>
   );

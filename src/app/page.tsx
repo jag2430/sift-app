@@ -304,14 +304,42 @@ export default function Home() {
             {step === "category" && (
               <div className="animate-fade-up">
                 <h2 className="sift-section-heading" style={{ marginBottom: 8 }}>What are you in the mood for?</h2>
-                <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginBottom: 32, lineHeight: 1.625 }}>Pick one to start.</p>
+                <p className="sift-text-sm" style={{ color: "hsl(237 8% 35%)", marginBottom: 32, lineHeight: 1.625 }}>Pick up to 3.</p>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   {categories.map((c) => (
-                    <OptionCard key={c.value} selected={filters.categories?.[0] === c.value} onClick={() => { setFilters((f) => ({ ...f, categories: [c.value] })); setTimeout(() => setStep("date"), 200); }}>
+                    <OptionCard
+                      key={c.value}
+                      selected={filters.categories?.includes(c.value) ?? false}
+                      onClick={() => {
+                        setFilters((f) => {
+                          const current = f.categories ?? [];
+                          if (current.includes(c.value)) {
+                            return { ...f, categories: current.filter((v) => v !== c.value) };
+                          }
+                          if (current.length >= 3) return f;
+                          return { ...f, categories: [...current, c.value] };
+                        });
+                      }}
+                    >
                       <span style={{ fontSize: "1.5rem", display: "block", marginBottom: 4 }}>{c.emoji}</span>
                       <span style={{ fontWeight: 500, color: "hsl(185 10% 18%)" }}>{c.label}</span>
                     </OptionCard>
                   ))}
+                </div>
+                <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+                  <button
+                    className="sift-btn-primary"
+                    disabled={!filters.categories?.length}
+                    onClick={() => setStep("date")}
+                    style={{
+                      minWidth: 160,
+                      justifyContent: "center",
+                      opacity: !filters.categories?.length ? 0.5 : 1,
+                      cursor: !filters.categories?.length ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    Continue
+                  </button>
                 </div>
               </div>
             )}
