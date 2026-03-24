@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { events } from "@/data/events";
 import type { GoingEvent, SavedEvent } from "@/types/user";
@@ -60,17 +61,20 @@ export default function CalendarSection({
   goingEvents,
   savedEvents,
 }: CalendarSectionProps) {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const { toggleGoing, removeSavedEvent } = useUser();
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const monthLabel = now.toLocaleDateString("en-US", {
+  const [viewYear, setViewYear] = useState(now.getFullYear());
+  const [viewMonth, setViewMonth] = useState(now.getMonth());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
   });
+
   const days = useMemo(
-    () => getDaysInMonth(year, month),
-    [year, month]
+    () => getDaysInMonth(viewYear, viewMonth),
+    [viewYear, viewMonth]
   );
   const { dateToGoing, dateToSaved } = useMemo(
     () => getEventIdsByDate(goingEvents, savedEvents),
@@ -89,9 +93,29 @@ export default function CalendarSection({
     .filter((e): e is NonNullable<typeof e> => e != null);
 
   const toDateKey = (day: number) => {
-    const m = String(month + 1).padStart(2, "0");
+    const m = String(viewMonth + 1).padStart(2, "0");
     const d = String(day).padStart(2, "0");
-    return `${year}-${m}-${d}`;
+    return `${viewYear}-${m}-${d}`;
+  };
+
+  const prevMonth = () => {
+    if (viewMonth === 0) {
+      setViewYear((y) => y - 1);
+      setViewMonth(11);
+    } else {
+      setViewMonth((m) => m - 1);
+    }
+    setSelectedDate(null);
+  };
+
+  const nextMonth = () => {
+    if (viewMonth === 11) {
+      setViewYear((y) => y + 1);
+      setViewMonth(0);
+    } else {
+      setViewMonth((m) => m + 1);
+    }
+    setSelectedDate(null);
   };
 
   return (
@@ -102,15 +126,37 @@ export default function CalendarSection({
       >
         My Calendar
       </h3>
-      <p
-        className="sift-text-sm"
+      <div
         style={{
-          color: "hsl(var(--secondary))",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
           marginBottom: 12,
         }}
       >
-        {monthLabel}
-      </p>
+        <button
+          type="button"
+          onClick={prevMonth}
+          className="sift-btn-ghost"
+          style={{ padding: "4px 8px" }}
+        >
+          <ChevronLeft size={16} strokeWidth={1.5} />
+        </button>
+        <p
+          className="sift-text-sm"
+          style={{ color: "hsl(var(--secondary))", fontWeight: 600 }}
+        >
+          {monthLabel}
+        </p>
+        <button
+          type="button"
+          onClick={nextMonth}
+          className="sift-btn-ghost"
+          style={{ padding: "4px 8px" }}
+        >
+          <ChevronRight size={16} strokeWidth={1.5} />
+        </button>
+      </div>
       <div
         style={{
           display: "grid",
@@ -225,9 +271,38 @@ export default function CalendarSection({
                 <div
                   key={e.eventId}
                   className="sift-text-sm"
-                  style={{ marginTop: 4 }}
+                  style={{
+                    marginTop: 4,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 8,
+                  }}
                 >
-                  {e.eventTitle}
+                  <span>{e.eventTitle}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      toggleGoing({
+                        eventId: e.eventId,
+                        eventTitle: e.eventTitle,
+                        eventDate: e.eventDate,
+                      })
+                    }
+                    style={{
+                      flexShrink: 0,
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "hsl(var(--secondary))",
+                      padding: 2,
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    aria-label="Remove from going"
+                  >
+                    <X size={14} strokeWidth={1.5} />
+                  </button>
                 </div>
               ))}
             </div>
@@ -244,9 +319,32 @@ export default function CalendarSection({
                 <div
                   key={e.id}
                   className="sift-text-sm"
-                  style={{ marginTop: 4 }}
+                  style={{
+                    marginTop: 4,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 8,
+                  }}
                 >
-                  {e.title}
+                  <span>{e.title}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeSavedEvent(e.id)}
+                    style={{
+                      flexShrink: 0,
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "hsl(var(--secondary))",
+                      padding: 2,
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    aria-label="Remove from saved"
+                  >
+                    <X size={14} strokeWidth={1.5} />
+                  </button>
                 </div>
               ))}
             </div>
